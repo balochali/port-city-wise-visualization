@@ -61,7 +61,14 @@ export async function POST(req: NextRequest) {
       const firstCell = row[0]?.toString()?.trim();
 
       // Skip header row
-      if (firstCell === "AGENTS" || firstCell === "Agents") continue;
+      // Check for AGENTS title OR explicit container headers
+      const isHeaderRow =
+        (firstCell &&
+          (firstCell.toUpperCase() === "AGENTS" ||
+            firstCell.toUpperCase() === "AGENT")) ||
+        row.some((cell) => cell?.toString().toUpperCase().includes("20'GP"));
+
+      if (isHeaderRow) continue;
 
       // Skip completely empty rows
       if (!firstCell) continue;

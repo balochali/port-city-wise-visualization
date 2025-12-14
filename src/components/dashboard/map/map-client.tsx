@@ -10,32 +10,26 @@ import {
 import "leaflet/dist/leaflet.css";
 import { CityBlock } from "@/types/types";
 import { lexend } from "@/libs/fonts";
-import { useEffect } from "react";
-
-/* -----------------------------
-   Port city coordinates
--------------------------------- */
-const cityCoordinates: Record<string, [number, number]> = {
-  CHENNAI: [13.0827, 80.2707],
-  KOLKATA: [22.5726, 88.3639],
-  MUMBAI: [19.076, 72.8777],
-  VISAKHAPATNAM: [17.6869, 83.2185],
-  MUNDRA: [22.8392, 69.7219],
-  NHAVA_SHEVA: [18.9482, 72.9481],
-};
+import { useEffect, useState } from "react";
 
 /* -----------------------------
    Fly to selected city
 -------------------------------- */
-function FlyToCity({ selectedCity }: { selectedCity: string }) {
+function FlyToCity({
+  selectedCity,
+  coordinates,
+}: {
+  selectedCity: string;
+  coordinates: Record<string, [number, number]>;
+}) {
   const map = useMap();
 
   useEffect(() => {
-    const coords = cityCoordinates[selectedCity];
+    const coords = coordinates[selectedCity];
     if (coords) {
       map.flyTo(coords, 7, { duration: 1.5 });
     }
-  }, [selectedCity, map]);
+  }, [selectedCity, coordinates, map]);
 
   return null;
 }
@@ -50,10 +44,91 @@ export default function MapClient({
   selectedCity: string;
   cityData: CityBlock[];
 }) {
+  const [coordinates, setCoordinates] = useState<
+    Record<string, [number, number]>
+  >({});
   const activePortData = cityData.find((c) => c.city === selectedCity);
   const agentCount = activePortData?.agents.length || 0;
   const totalContainers =
     activePortData?.agents.reduce((sum, a) => sum + a.total, 0) || 0;
+
+  // Fetch coordinates for all cities
+  useEffect(() => {
+    const fetchCoordinates = async () => {
+      // 1. Initial Load from Cache
+      const cached = localStorage.getItem("cityCoordinates");
+      const cachedCoords: Record<string, [number, number]> = cached
+        ? JSON.parse(cached)
+        : {};
+
+      let currentCoords = { ...coordinates, ...cachedCoords };
+
+      // Update state immediately with cached values if they are new
+      if (
+        Object.keys(cachedCoords).length > 0 &&
+        Object.keys(coordinates).length === 0
+      ) {
+        setCoordinates(currentCoords);
+      }
+
+      // 2. Identify missing cities
+      const missingCities = cityData
+        .map((c) => c.city)
+        .filter((city) => !currentCoords[city]);
+
+      if (missingCities.length === 0) return;
+
+      // Prioritize selectedCity if it's missing
+      if (missingCities.includes(selectedCity)) {
+        missingCities.splice(missingCities.indexOf(selectedCity), 1);
+        missingCities.unshift(selectedCity);
+      }
+
+      // 3. Fetch missing cities sequentially
+      for (const city of missingCities) {
+        try {
+          // Check cache again in case of race/updates
+          if (currentCoords[city]) continue;
+
+          const response = await fetch(
+            `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
+              city
+            )}&format=json&limit=1`
+          );
+          const data = await response.json();
+
+          if (data && data.length > 0) {
+            const lat = parseFloat(data[0].lat);
+            const lon = parseFloat(data[0].lon);
+
+            // Update local tracking
+            currentCoords[city] = [lat, lon];
+            cachedCoords[city] = [lat, lon];
+
+            // Update State Incrementally
+            setCoordinates((prev) => ({
+              ...prev,
+              [city]: [lat, lon],
+            }));
+
+            // Update Cache
+            localStorage.setItem(
+              "cityCoordinates",
+              JSON.stringify(cachedCoords)
+            );
+          }
+
+          // Delay to respect rate limits
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+        } catch (error) {
+          console.error(`Failed to geocode ${city}:`, error);
+        }
+      }
+    };
+
+    fetchCoordinates();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cityData, selectedCity]); // Add selectedCity to dependencies to prioritize it check
 
   return (
     <div className={`${lexend.className} relative w-full h-full`}>
@@ -70,10 +145,10 @@ export default function MapClient({
           maxZoom={20}
         />
 
-        <FlyToCity selectedCity={selectedCity} />
+        <FlyToCity selectedCity={selectedCity} coordinates={coordinates} />
 
         {cityData.map((cityBlock) => {
-          const coords = cityCoordinates[cityBlock.city];
+          const coords = coordinates[cityBlock.city];
           if (!coords) return null;
 
           const isSelected = cityBlock.city === selectedCity;
