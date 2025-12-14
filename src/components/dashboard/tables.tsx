@@ -2,7 +2,7 @@
 
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { CityBlock } from "@/types/types";
 import { lexend } from "@/libs/fonts";
@@ -21,6 +21,8 @@ export default function Tables({
   selectedCity,
 }: TablesProps) {
   const [isAutoRotating, setIsAutoRotating] = useState(true);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const progressScrollRef = useRef<HTMLDivElement>(null);
 
   // Header labels and corresponding keys in data
   const columns: {
@@ -49,6 +51,38 @@ export default function Tables({
     return () => clearInterval(interval);
   }, [cityData.length, currentIndex, onCityChange, isAutoRotating]);
 
+  // Auto-scroll to active city button
+  useEffect(() => {
+    if (scrollContainerRef.current) {
+      const activeButton = scrollContainerRef.current.children[
+        currentIndex
+      ] as HTMLElement;
+      if (activeButton) {
+        activeButton.scrollIntoView({
+          behavior: "smooth",
+          block: "nearest",
+          inline: "center",
+        });
+      }
+    }
+  }, [currentIndex]);
+
+  // Auto-scroll progress bar
+  useEffect(() => {
+    if (progressScrollRef.current) {
+      const activeProgress = progressScrollRef.current.children[
+        currentIndex
+      ] as HTMLElement;
+      if (activeProgress) {
+        activeProgress.scrollIntoView({
+          behavior: "smooth",
+          block: "nearest",
+          inline: "center",
+        });
+      }
+    }
+  }, [currentIndex]);
+
   const currentCity = cityData[currentIndex];
 
   const fadeVariants = {
@@ -62,10 +96,12 @@ export default function Tables({
       opacity: 0,
     },
   };
+
   const handleCityClick = (index: number) => {
     onCityChange(index);
     setIsAutoRotating(false);
   };
+
   const handleResumeAutoRotation = () => {
     setIsAutoRotating(true);
   };
@@ -75,8 +111,8 @@ export default function Tables({
       className={`${lexend.className} w-full h-full flex flex-col bg-white rounded-sm shadow-sm border border-gray-100 overflow-hidden`}
     >
       <div className="bg-white border-b border-gray-200 px-6 py-4">
-        <div className="flex items-center justify-between">
-          <div>
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex-shrink-0">
             <h2 className="text-lg font-semibold text-gray-800">
               Port Container Data
             </h2>
@@ -98,23 +134,33 @@ export default function Tables({
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
-            {cityData.map((city, idx) => (
-              <button
-                key={idx}
-                onClick={() => handleCityClick(idx)}
-                className={`px-3 py-1 rounded-md text-sm font-medium transition-all flex items-center gap-1 ${
-                  idx === currentIndex
-                    ? "bg-blue-600 text-white shadow-sm"
-                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                }`}
-              >
-                {city.city}
-                {city.city === selectedCity && idx !== currentIndex && (
-                  <span className="w-1 h-1 rounded-full bg-white"></span>
-                )}
-              </button>
-            ))}
+          {/* Scrollable City Buttons */}
+          <div className="flex-1 overflow-hidden">
+            <div
+              ref={scrollContainerRef}
+              className="flex items-center gap-2 overflow-x-auto scrollbar-hide pb-1"
+              style={{
+                scrollbarWidth: "none",
+                msOverflowStyle: "none",
+              }}
+            >
+              {cityData.map((city, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => handleCityClick(idx)}
+                  className={`flex-shrink-0 px-3 py-1 rounded-md text-sm font-medium transition-all flex items-center gap-1 ${
+                    idx === currentIndex
+                      ? "bg-blue-600 text-white shadow-sm"
+                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  }`}
+                >
+                  {city.city}
+                  {city.city === selectedCity && idx !== currentIndex && (
+                    <span className="w-1 h-1 rounded-full bg-white"></span>
+                  )}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </div>
@@ -237,56 +283,72 @@ export default function Tables({
       </div>
 
       <div className="bg-white border-t border-gray-200 px-6 py-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center gap-2 flex-shrink-0">
             <div
               className={`w-2 h-2 rounded-full ${
                 isAutoRotating ? "bg-green-500 animate-pulse" : "bg-gray-400"
               }`}
             ></div>
-            <span className="text-xs text-gray-600">
+            <span className="text-xs text-gray-600 whitespace-nowrap">
               {isAutoRotating
-                ? "Auto-rotating every 5 seconds"
+                ? "Auto-rotating every 5s"
                 : "Auto-rotation paused"}
             </span>
           </div>
 
-          <div className="flex gap-2 flex-1 max-w-md">
-            {cityData.map((city, idx) => (
-              <div key={idx} className="flex-1">
-                <div className="flex flex-col items-center">
-                  <span
-                    className={`text-xs mb-1 ${
-                      idx === currentIndex
-                        ? "font-semibold text-blue-600"
-                        : "text-gray-500"
-                    }`}
-                  >
-                    {city.city}
-                  </span>
-                  <div className="w-full h-1.5 rounded-full bg-gray-200 overflow-hidden">
-                    {idx === currentIndex && (
-                      <motion.div
-                        className="h-full bg-blue-600"
-                        initial={{ width: "0%" }}
-                        animate={{ width: isAutoRotating ? "100%" : "100%" }}
-                        transition={{
-                          duration: isAutoRotating ? 5 : 0,
-                          ease: "linear",
-                        }}
-                      />
-                    )}
+          {/* Scrollable Progress Bar */}
+          <div className="flex-1 overflow-hidden">
+            <div
+              ref={progressScrollRef}
+              className="flex gap-2 overflow-x-auto scrollbar-hide pb-1"
+              style={{
+                scrollbarWidth: "none",
+                msOverflowStyle: "none",
+              }}
+            >
+              {cityData.map((city, idx) => (
+                <div key={idx} className="flex-shrink-0 min-w-[80px]">
+                  <div className="flex flex-col items-center">
+                    <span
+                      className={`text-xs mb-1 whitespace-nowrap ${
+                        idx === currentIndex
+                          ? "font-semibold text-blue-600"
+                          : "text-gray-500"
+                      }`}
+                    >
+                      {city.city}
+                    </span>
+                    <div className="w-full h-1.5 rounded-full bg-gray-200 overflow-hidden">
+                      {idx === currentIndex && (
+                        <motion.div
+                          className="h-full bg-blue-600"
+                          initial={{ width: "0%" }}
+                          animate={{ width: isAutoRotating ? "100%" : "100%" }}
+                          transition={{
+                            duration: isAutoRotating ? 5 : 0,
+                            ease: "linear",
+                          }}
+                        />
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
 
-          <div className="text-xs text-gray-500">
+          <div className="text-xs text-gray-500 flex-shrink-0 whitespace-nowrap">
             {currentIndex + 1} of {cityData.length}
           </div>
         </div>
       </div>
+
+      <style jsx>{`
+        .scrollbar-hide::-webkit-scrollbar {
+          display: none;
+        }
+      `}</style>
     </div>
   );
 }

@@ -84,14 +84,33 @@ export default function AdminDashboard() {
     if (!selectedFile) return;
 
     setUploading(true);
-    // Add your upload logic here
-    // For now, just simulate upload
-    setTimeout(() => {
+
+    const formData = new FormData();
+    formData.append("file", selectedFile);
+
+    try {
+      const response = await fetch("/api/ports/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        alert("File uploaded successfully!");
+        setShowUploadModal(false);
+        setSelectedFile(null);
+        // Refresh stats
+        router.refresh();
+      } else {
+        alert(`Upload failed: ${data.message}`);
+      }
+    } catch (error) {
+      console.error("Upload error:", error);
+      alert("An error occurred during upload.");
+    } finally {
       setUploading(false);
-      setShowUploadModal(false);
-      setSelectedFile(null);
-      alert("File uploaded successfully!");
-    }, 2000);
+    }
   };
 
   if (loading) {
