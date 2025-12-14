@@ -22,18 +22,21 @@ export default function Tables({
 }: TablesProps) {
   const [isAutoRotating, setIsAutoRotating] = useState(true);
 
-  const headers = [
-    "20'GP",
-    "40'HC",
-    "20'RF",
-    "40'RF",
-    "20'OT",
-    "40'OT",
-    "20'FR",
-    "40'FR",
-    "20'TK",
-    "45 HC",
-    "Total",
+  // Header labels and corresponding keys in data
+  const columns: {
+    label: string;
+    key: keyof Omit<import("@/types/types").AgentData, "agent" | "total">;
+  }[] = [
+    { label: "20'GP", key: "20GP" },
+    { label: "40'HC", key: "40HC" },
+    { label: "20'RF", key: "20RF" },
+    { label: "40'RF", key: "40RF" },
+    { label: "20'OT", key: "20OT" },
+    { label: "40'OT", key: "40OT" },
+    { label: "20'FR", key: "20FR" },
+    { label: "40'FR", key: "40FR" },
+    { label: "20'TK", key: "20TK" },
+    { label: "45 HC", key: "45HC" },
   ];
 
   useEffect(() => {
@@ -160,14 +163,17 @@ export default function Tables({
                     <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                       Agent
                     </th>
-                    {headers.map((h, i) => (
+                    {columns.map((col) => (
                       <th
-                        key={i}
+                        key={col.key}
                         className="px-3 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider"
                       >
-                        {h}
+                        {col.label}
                       </th>
                     ))}
+                    <th className="px-3 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                      Total
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
@@ -182,15 +188,15 @@ export default function Tables({
                       <td className="px-4 py-3 font-medium text-gray-800 text-sm">
                         {row.agent}
                       </td>
-                      {row.values.map((v, idx) => (
+                      {columns.map((col) => (
                         <td
-                          key={idx}
+                          key={col.key}
                           className="px-3 py-3 text-center text-sm text-gray-600"
                         >
-                          {v === 0 ? (
+                          {row[col.key] === 0 ? (
                             <span className="text-gray-300">0</span>
                           ) : (
-                            v
+                            row[col.key]
                           )}
                         </td>
                       ))}
@@ -205,14 +211,14 @@ export default function Tables({
                     <td className="px-4 py-3 font-bold text-gray-800 text-sm">
                       City Total
                     </td>
-                    {Array.from({ length: 10 }).map((_, idx) => {
+                    {columns.map((col) => {
                       const colSum = currentCity.agents.reduce(
-                        (sum, agent) => sum + agent.values[idx],
+                        (sum, agent) => sum + (agent[col.key] || 0),
                         0
                       );
                       return (
                         <td
-                          key={idx}
+                          key={col.key}
                           className="px-3 py-3 text-center font-bold text-sm text-gray-700"
                         >
                           {colSum}

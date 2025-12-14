@@ -1,6 +1,15 @@
 export interface AgentData {
   agent: string;
-  values: number[];
+  "20GP": number;
+  "40HC": number;
+  "20RF": number;
+  "40RF": number;
+  "20OT": number;
+  "40OT": number;
+  "20FR": number;
+  "40FR": number;
+  "20TK": number;
+  "45HC": number;
   total: number;
 }
 
@@ -11,18 +20,14 @@ export interface CityBlock {
 
 export interface TablesProps {
   cityData: CityBlock[];
+  currentIndex: number;
+  onCityChange: (index: number) => void;
+  selectedCity: string;
 }
 
 export interface MapProps {
   selectedCity: string;
-  cityData: Array<{
-    city: string;
-    agents: Array<{
-      agent: string;
-      values: number[];
-      total: number;
-    }>;
-  }>;
+  cityData: CityBlock[];
 }
 
 export interface User {
