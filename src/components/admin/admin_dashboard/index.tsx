@@ -9,6 +9,7 @@ export default function AdminDashboard() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
+  const [userCount, setUserCount] = useState<Number>(0);
 
   useEffect(() => {
     // Verify token with backend
@@ -34,6 +35,18 @@ export default function AdminDashboard() {
 
         if (data.success) {
           setUser(data.user); // Use user data from server
+
+          // Fetch users count
+          try {
+            const usersResponse = await fetch("/api/users");
+            const usersData = await usersResponse.json();
+            if (usersData.success) {
+              setUserCount(usersData.count);
+            }
+          } catch (error) {
+            console.error("Error fetching users:", error);
+          }
+
           setLoading(false);
           // router.push("/admin/dashboard"); // Already here
         } else {
@@ -147,7 +160,9 @@ export default function AdminDashboard() {
               <h3 className="text-lg font-semibold text-blue-800 mb-2">
                 Total Users
               </h3>
-              <p className="text-3xl font-bold text-blue-600">0</p>
+              <p className="text-3xl font-bold text-blue-600">
+                {userCount.toString()}
+              </p>
               <p className="text-sm text-blue-500 mt-2">Manage user accounts</p>
             </div>
 
