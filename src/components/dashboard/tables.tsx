@@ -41,14 +41,83 @@ export default function Tables({
     { label: "45 HC", key: "45HC" },
   ];
 
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  // Dynamic Auto-Rotation & Scrolling Logic
   useEffect(() => {
     if (!isAutoRotating) return;
 
-    const interval = setInterval(() => {
-      onCityChange((currentIndex + 1) % cityData.length);
-    }, 5000);
+    let timeoutId: NodeJS.Timeout;
+    let animationFrameId: number;
+    const startTime = Date.now();
+    const startDelay = 2000;
+    const endDelay = 3000;
+    const pixelsPerSecond = 40; // Adjustable reading speed
 
-    return () => clearInterval(interval);
+    const runAutoScroll = () => {
+      if (!contentRef.current) {
+        // Fallback if ref not ready
+        timeoutId = setTimeout(() => {
+          onCityChange((currentIndex + 1) % cityData.length);
+        }, 5000);
+        return;
+      }
+
+      const element = contentRef.current;
+      const scrollHeight = element.scrollHeight;
+      const clientHeight = element.clientHeight;
+      const maxScroll = scrollHeight - clientHeight;
+
+      if (maxScroll <= 0) {
+        // No scrolling needed, just wait standard time
+        timeoutId = setTimeout(() => {
+          onCityChange((currentIndex + 1) % cityData.length);
+        }, 5000);
+      } else {
+        // Needs scrolling
+        const scrollDuration = (maxScroll / pixelsPerSecond) * 1000;
+        const totalDuration = startDelay + scrollDuration + endDelay;
+
+        // Set next city trigger
+        timeoutId = setTimeout(() => {
+          onCityChange((currentIndex + 1) % cityData.length);
+        }, totalDuration);
+
+        // Perform smooth linear scroll
+        const animateScroll = () => {
+          const now = Date.now();
+          const elapsed = now - startTime;
+
+          if (elapsed < startDelay) {
+            // Waiting period
+            element.scrollTop = 0;
+            animationFrameId = requestAnimationFrame(animateScroll);
+          } else if (elapsed < startDelay + scrollDuration) {
+            // Scrolling period
+            const scrollProgress = (elapsed - startDelay) / scrollDuration;
+            element.scrollTop = scrollProgress * maxScroll;
+            animationFrameId = requestAnimationFrame(animateScroll);
+          } else {
+            // End delay period (hold at bottom)
+            element.scrollTop = maxScroll;
+            if (elapsed < totalDuration) {
+              animationFrameId = requestAnimationFrame(animateScroll);
+            }
+          }
+        };
+
+        animationFrameId = requestAnimationFrame(animateScroll);
+      }
+    };
+
+    // Small delay to ensure render/layout/animation (0.4s) is complete before measuring
+    const initTimeout = setTimeout(runAutoScroll, 600);
+
+    return () => {
+      clearTimeout(timeoutId);
+      clearTimeout(initTimeout);
+      cancelAnimationFrame(animationFrameId);
+    };
   }, [cityData.length, currentIndex, onCityChange, isAutoRotating]);
 
   // Auto-scroll to active city button
@@ -177,7 +246,8 @@ export default function Tables({
               duration: 0.4,
               ease: "easeInOut",
             }}
-            className="absolute inset-0 overflow-auto p-6"
+            ref={contentRef} // Attached ref here for scrolling
+            className="absolute inset-0 overflow-auto p-6 scrollbar-hide"
           >
             <div className="mb-6">
               <div className="flex items-center justify-between">

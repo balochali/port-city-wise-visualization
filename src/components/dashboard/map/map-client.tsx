@@ -10,7 +10,7 @@ import {
 import "leaflet/dist/leaflet.css";
 import { CityBlock } from "@/types/types";
 import { lexend } from "@/libs/fonts";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 /* -----------------------------
    Fly to selected city
@@ -54,6 +54,8 @@ export default function MapClient({
 
   // Fetch coordinates for all cities
   useEffect(() => {
+    let isMounted = true;
+
     const fetchCoordinates = async () => {
       // 1. Initial Load from Cache
       const cached = localStorage.getItem("cityCoordinates");
@@ -65,6 +67,7 @@ export default function MapClient({
 
       // Update state immediately with cached values if they are new
       if (
+        isMounted &&
         Object.keys(cachedCoords).length > 0 &&
         Object.keys(coordinates).length === 0
       ) {
@@ -78,26 +81,42 @@ export default function MapClient({
 
       if (missingCities.length === 0) return;
 
-      // Prioritize selectedCity if it's missing
-      if (missingCities.includes(selectedCity)) {
-        missingCities.splice(missingCities.indexOf(selectedCity), 1);
+      // Prioritize selectedCity if it's missing (move to front if exists)
+      // Note: We don't filter again here to avoid complex race conditions, just simple re-order
+      const selectedIdx = missingCities.indexOf(selectedCity);
+      if (selectedIdx > -1) {
+        missingCities.splice(selectedIdx, 1);
         missingCities.unshift(selectedCity);
       }
 
       // 3. Fetch missing cities sequentially
       for (const city of missingCities) {
+        if (!isMounted) break;
+
         try {
           // Check cache again in case of race/updates
           if (currentCoords[city]) continue;
+
+          // Add delay to respect rate limits
+          // We wait BEFORE fetching to handle the loop delay cleanly
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+
+          if (!isMounted) break;
 
           const response = await fetch(
             `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
               city
             )}&format=json&limit=1`
           );
+
+          if (!response.ok) {
+            // throw new Error("Fetch failed");
+            continue;
+          }
+
           const data = await response.json();
 
-          if (data && data.length > 0) {
+          if (isMounted && data && data.length > 0) {
             const lat = parseFloat(data[0].lat);
             const lon = parseFloat(data[0].lon);
 
@@ -117,18 +136,19 @@ export default function MapClient({
               JSON.stringify(cachedCoords)
             );
           }
-
-          // Delay to respect rate limits
-          await new Promise((resolve) => setTimeout(resolve, 1000));
         } catch (error) {
-          console.error(`Failed to geocode ${city}:`, error);
+          // console.error(`Failed to geocode ${city}:`, error);
         }
       }
     };
 
     fetchCoordinates();
+
+    return () => {
+      isMounted = false;
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cityData, selectedCity]); // Add selectedCity to dependencies to prioritize it check
+  }, [cityData]); // Run only when cityData changes
 
   return (
     <div className={`${lexend.className} relative w-full h-full`}>

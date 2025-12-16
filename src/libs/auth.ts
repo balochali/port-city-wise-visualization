@@ -8,7 +8,7 @@ if (!JWT_SECRET) {
 
 export interface TokenPayload {
   userId: string;
-  email: string;
+  username: string;
 }
 
 export function generateToken(payload: TokenPayload): string {

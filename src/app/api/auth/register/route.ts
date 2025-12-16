@@ -7,10 +7,10 @@ export async function POST(request: NextRequest) {
     await connectDB();
 
     const body = await request.json();
-    const { email, password, name } = body;
+    const { username, password, name } = body;
 
     // Basic validation
-    if (!email || !password || !name) {
+    if (!username || !password || !name) {
       return NextResponse.json(
         { success: false, message: "All fields are required" },
         { status: 400 }
@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if user already exists
-    const existingUser = await User.findOne({ email });
+    const existingUser = await User.findOne({ username });
     if (existingUser) {
       return NextResponse.json(
         { success: false, message: "User already exists" },
@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Create new user
-    const user = new User({ email, password, name });
+    const user = new User({ username, password, name });
     await user.save();
 
     return NextResponse.json(
@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
         message: "User registered successfully",
         user: {
           id: user._id,
-          email: user.email,
+          username: user.username,
           name: user.name,
         },
       },

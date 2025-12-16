@@ -9,7 +9,7 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [formData, setFormData] = useState({
-    email: "",
+    username: "",
     password: "",
   });
 
@@ -27,14 +27,8 @@ export default function Login() {
     setError("");
 
     // Validation
-    if (!formData.email || !formData.password) {
+    if (!formData.username || !formData.password) {
       setError("All fields are required");
-      setLoading(false);
-      return;
-    }
-
-    if (!formData.email.includes("@")) {
-      setError("Please enter a valid email address");
       setLoading(false);
       return;
     }
@@ -47,7 +41,7 @@ export default function Login() {
         },
         credentials: "include", // Important: include cookies
         body: JSON.stringify({
-          email: formData.email,
+          username: formData.username,
           password: formData.password,
         }),
       });
@@ -67,7 +61,7 @@ export default function Login() {
 
         // Clear form
         setFormData({
-          email: "",
+          username: "",
           password: "",
         });
 
@@ -106,15 +100,15 @@ export default function Login() {
         <form onSubmit={handleSubmit} className="px-6 py-6 space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Email Address
+              Username
             </label>
             <input
-              type="email"
-              name="email"
-              value={formData.email}
+              type="text"
+              name="username"
+              value={formData.username}
               onChange={handleChange}
               required
-              placeholder="Enter your email"
+              placeholder="Enter your username"
               className="w-full px-4 py-2.5 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-800"
             />
           </div>

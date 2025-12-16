@@ -3,6 +3,7 @@ import connectDB from "@/libs/mongodb";
 import PortData from "@/models/portData";
 import * as XLSX from "xlsx";
 import { verifyToken } from "@/libs/auth";
+import { logActivity } from "@/libs/activity";
 
 export async function POST(req: NextRequest) {
   try {
@@ -159,6 +160,14 @@ export async function POST(req: NextRequest) {
         );
       }
     }
+
+    // Log Activity
+    await logActivity(
+      "Data Upload",
+      `Processed ${processedCities.size} cities from uploaded file`,
+      "Admin",
+      "success"
+    );
 
     return NextResponse.json({
       success: true,

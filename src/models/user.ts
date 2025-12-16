@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 
 // Define User interface
 interface IUser extends mongoose.Document {
-  email: string;
+  username: string;
   password: string;
   name: string;
   createdAt: Date;
@@ -11,7 +11,7 @@ interface IUser extends mongoose.Document {
 }
 
 const UserSchema = new mongoose.Schema<IUser>({
-  email: {
+  username: {
     type: String,
     required: true,
     unique: true,
@@ -52,5 +52,10 @@ UserSchema.methods.comparePassword = async function (
 };
 
 // Create and export the model
-const User = mongoose.models.User || mongoose.model<IUser>("User", UserSchema);
+if (mongoose.models.User) {
+  // Prevent OverwriteModelError in development
+  delete mongoose.models.User;
+}
+
+const User = mongoose.model<IUser>("User", UserSchema);
 export default User;

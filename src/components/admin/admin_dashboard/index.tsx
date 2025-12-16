@@ -14,8 +14,20 @@ export default function AdminDashboard() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
 
+  const [showAddUserModal, setShowAddUserModal] = useState(false);
+  const [newUser, setNewUser] = useState({
+    name: "",
+    username: "",
+    password: "",
+  });
+  const [creatingUser, setCreatingUser] = useState(false);
+  const [portCount, setPortCount] = useState(0);
+  const [agentCount, setAgentCount] = useState(0);
+  const [activities, setActivities] = useState<any[]>([]);
+  const [systemInfo, setSystemInfo] = useState<any>(null);
+
   useEffect(() => {
-    const verifyToken = async () => {
+    const fetchDashboardData = async () => {
       try {
         const token = localStorage.getItem("token");
         const headers: HeadersInit = {};
@@ -36,16 +48,45 @@ export default function AdminDashboard() {
         if (data.success) {
           setUser(data.user);
 
-          try {
-            const usersResponse = await fetch("/api/users");
-            const usersData = await usersResponse.json();
-            if (usersData.success) {
-              setUserCount(usersData.count);
-            }
-          } catch (error) {
-            console.error("Error fetching users:", error);
-          }
+          const fetchData = async () => {
+            try {
+              // Parallelize independent fetches
+              const [usersRes, portsRes, activityRes, systemRes] =
+                await Promise.all([
+                  fetch("/api/users"),
+                  fetch("/api/ports"),
+                  fetch("/api/admin/activity", { headers }),
+                  fetch("/api/admin/system"),
+                ]);
 
+              const usersData = await usersRes.json();
+              if (usersData.success) setUserCount(usersData.count);
+
+              const portsData = await portsRes.json();
+              if (portsData.success) {
+                setPortCount(portsData.data.length);
+                const totalAgents = portsData.data.reduce(
+                  (acc: number, port: any) => acc + (port.agents?.length || 0),
+                  0
+                );
+                setAgentCount(totalAgents);
+              }
+
+              const activityData = await activityRes.json();
+              if (activityData.success) {
+                setActivities(activityData.data);
+              }
+
+              const systemData = await systemRes.json();
+              if (systemData.success) {
+                setSystemInfo(systemData.data);
+              }
+            } catch (error) {
+              console.error("Error fetching dashboard data:", error);
+            }
+          };
+
+          fetchData();
           setLoading(false);
         } else {
           throw new Error("Invalid token");
@@ -58,7 +99,7 @@ export default function AdminDashboard() {
       }
     };
 
-    verifyToken();
+    fetchDashboardData();
   }, [router]);
 
   const handleLogout = async () => {
@@ -113,6 +154,43 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleAddUser = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newUser.name || !newUser.username || !newUser.password) {
+      alert("Please fill in all fields");
+      return;
+    }
+
+    setCreatingUser(true);
+
+    try {
+      const response = await fetch("/api/users", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newUser),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        alert("User created successfully!");
+        setShowAddUserModal(false);
+        setNewUser({ name: "", username: "", password: "" });
+        // Refresh stats
+        setUserCount(Number(userCount) + 1);
+      } else {
+        alert(`Failed to create user: ${data.message}`);
+      }
+    } catch (error) {
+      console.error("Error creating user:", error);
+      alert("An error occurred while creating the user.");
+    } finally {
+      setCreatingUser(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -138,7 +216,7 @@ export default function AdminDashboard() {
                 <h1 className="text-xl font-semibold text-gray-900">
                   Admin Panel
                 </h1>
-                <p className="text-sm text-gray-500">{user?.email}</p>
+                <p className="text-sm text-gray-500">{user?.username}</p>
               </div>
             </div>
 
@@ -194,7 +272,9 @@ export default function AdminDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600 mb-1">Port Locations</p>
-                <p className="text-3xl font-semibold text-gray-900">6</p>
+                <p className="text-3xl font-semibold text-gray-900">
+                  {portCount}
+                </p>
               </div>
               <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
                 <svg
@@ -224,7 +304,9 @@ export default function AdminDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600 mb-1">Active Agents</p>
-                <p className="text-3xl font-semibold text-gray-900">8</p>
+                <p className="text-3xl font-semibold text-gray-900">
+                  {agentCount}
+                </p>
               </div>
               <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
                 <svg
@@ -254,7 +336,10 @@ export default function AdminDashboard() {
           </div>
           <div className="p-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              <button className="flex items-center gap-3 p-4 border rounded-lg hover:bg-gray-50 transition text-left">
+              <button
+                onClick={() => setShowAddUserModal(true)}
+                className="flex items-center gap-3 p-4 border rounded-lg hover:bg-gray-50 transition text-left"
+              >
                 <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
                   <svg
                     className="w-5 h-5 text-blue-600"
@@ -301,7 +386,10 @@ export default function AdminDashboard() {
                 </div>
               </button>
 
-              <button className="flex items-center gap-3 p-4 border rounded-lg hover:bg-gray-50 transition text-left">
+              <button
+                onClick={() => alert("Settings feature coming soon!")}
+                className="flex items-center gap-3 p-4 border rounded-lg hover:bg-gray-50 transition text-left"
+              >
                 <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
                   <svg
                     className="w-5 h-5 text-purple-600"
@@ -325,7 +413,7 @@ export default function AdminDashboard() {
                 </div>
                 <div>
                   <p className="font-medium text-gray-900">Settings</p>
-                  <p className="text-sm text-gray-500">Configure system</p>
+                  <p className="text-sm text-gray-500">Coming Soon</p>
                 </div>
               </button>
             </div>
@@ -343,50 +431,36 @@ export default function AdminDashboard() {
             </div>
             <div className="p-6">
               <div className="space-y-4">
-                <div className="flex items-start gap-3">
-                  <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-900">
-                      User login successful
-                    </p>
-                    <p className="text-xs text-gray-500">
-                      Admin user logged in • Just now
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-900">
-                      Port data accessed
-                    </p>
-                    <p className="text-xs text-gray-500">
-                      MUNDRA port viewed • 5 mins ago
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3">
-                  <div className="w-2 h-2 bg-purple-500 rounded-full mt-2"></div>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-900">
-                      System backup completed
-                    </p>
-                    <p className="text-xs text-gray-500">
-                      Automated backup • 2 hours ago
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3">
-                  <div className="w-2 h-2 bg-gray-300 rounded-full mt-2"></div>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-900">
-                      User registration
-                    </p>
-                    <p className="text-xs text-gray-500">
-                      New user added • Yesterday
-                    </p>
-                  </div>
-                </div>
+                {activities.length === 0 ? (
+                  <p className="text-gray-500 text-sm text-center py-4">
+                    No recent activity
+                  </p>
+                ) : (
+                  activities.map((activity, index) => (
+                    <div key={index} className="flex items-start gap-3">
+                      <div
+                        className={`w-2 h-2 rounded-full mt-2 ${
+                          activity.type === "success"
+                            ? "bg-green-500"
+                            : activity.type === "error"
+                            ? "bg-red-500"
+                            : activity.type === "warning"
+                            ? "bg-yellow-500"
+                            : "bg-blue-500"
+                        }`}
+                      ></div>
+                      <div className="flex-1">
+                        <p className="text-sm font-medium text-gray-900">
+                          {activity.action}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          {activity.details} •{" "}
+                          {new Date(activity.createdAt).toLocaleString()}
+                        </p>
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
           </div>
@@ -404,31 +478,31 @@ export default function AdminDashboard() {
                   <span className="text-sm text-gray-600">System Status</span>
                   <span className="flex items-center gap-2 text-sm font-medium text-green-600">
                     <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                    Operational
+                    {systemInfo?.status || "Checking..."}
                   </span>
                 </div>
                 <div className="flex justify-between items-center py-2 border-b">
                   <span className="text-sm text-gray-600">Database</span>
                   <span className="text-sm font-medium text-gray-900">
-                    Connected
+                    {systemInfo?.database || "Checking..."}
                   </span>
                 </div>
                 <div className="flex justify-between items-center py-2 border-b">
                   <span className="text-sm text-gray-600">Last Backup</span>
                   <span className="text-sm font-medium text-gray-900">
-                    2 hours ago
+                    {systemInfo?.lastBackup || "N/A"}
                   </span>
                 </div>
                 <div className="flex justify-between items-center py-2 border-b">
                   <span className="text-sm text-gray-600">Server Uptime</span>
                   <span className="text-sm font-medium text-gray-900">
-                    15 days
+                    {systemInfo?.uptime || "Loading..."}
                   </span>
                 </div>
                 <div className="flex justify-between items-center py-2">
                   <span className="text-sm text-gray-600">Version</span>
                   <span className="text-sm font-medium text-gray-900">
-                    v1.0.0
+                    {systemInfo?.version || "v1.0.0"}
                   </span>
                 </div>
               </div>
@@ -562,6 +636,103 @@ export default function AdminDashboard() {
                 {uploading ? "Uploading..." : "Upload"}
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add User Modal */}
+      {showAddUserModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-md w-full">
+            <div className="px-6 py-4 border-b flex items-center justify-between">
+              <h3 className="text-lg font-semibold text-gray-900">
+                Add New User
+              </h3>
+              <button
+                onClick={() => setShowAddUserModal(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
+
+            <form onSubmit={handleAddUser} className="p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Full Name
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={newUser.name}
+                  onChange={(e) =>
+                    setNewUser({ ...newUser, name: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="John Doe"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Username
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={newUser.username}
+                  onChange={(e) =>
+                    setNewUser({ ...newUser, username: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="johndoe"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Password
+                </label>
+                <input
+                  type="password"
+                  required
+                  minLength={6}
+                  value={newUser.password}
+                  onChange={(e) =>
+                    setNewUser({ ...newUser, password: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="******"
+                />
+              </div>
+
+              <div className="pt-4 flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => setShowAddUserModal(false)}
+                  className="flex-1 px-4 py-2 border rounded-lg text-gray-700 hover:bg-gray-50 transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={creatingUser}
+                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:bg-gray-300 disabled:cursor-not-allowed"
+                >
+                  {creatingUser ? "Creating..." : "Create User"}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

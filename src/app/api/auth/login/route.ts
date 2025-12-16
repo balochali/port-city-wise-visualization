@@ -3,11 +3,12 @@ import connectDB from "@/libs/mongodb";
 import User from "@/models/user";
 import { generateToken } from "@/libs/auth";
 import { LoginRequest, LoginResponse } from "@/types/types";
+import { logActivity } from "@/libs/activity";
 
 // For a real app, you might want to use a validation library like Zod
 function validateLoginData(data: LoginRequest): string | null {
-  if (!data.email || !data.email.includes("@")) {
-    return "Valid email is required";
+  if (!data.username) {
+    return "Username is required";
   }
 
   if (!data.password || data.password.length < 6) {
@@ -34,8 +35,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Find user by email
-    const user = await User.findOne({ email: body.email.toLowerCase() });
+    // Find user by username
+    const user = await User.findOne({ username: body.username.toLowerCase() });
 
     if (!user) {
       return NextResponse.json<LoginResponse>(
@@ -63,8 +64,16 @@ export async function POST(request: NextRequest) {
     // Generate JWT token
     const token = generateToken({
       userId: user._id.toString(),
-      email: user.email,
+      username: user.username,
     });
+
+    // Log Activity
+    await logActivity(
+      "User Login",
+      "User logged in successfully",
+      user.username,
+      "success"
+    );
 
     // Create response with user data
     const response = NextResponse.json<LoginResponse>({
@@ -73,7 +82,7 @@ export async function POST(request: NextRequest) {
       token,
       user: {
         id: user._id.toString(),
-        email: user.email,
+        username: user.username,
         name: user.name,
       },
     });

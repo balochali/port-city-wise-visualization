@@ -32,13 +32,13 @@ export interface MapProps {
 
 export interface User {
   id: string;
-  email: string;
+  username: string;
   name: string;
   createdAt: Date;
 }
 
 export interface LoginRequest {
-  email: string;
+  username: string;
   password: string;
 }
 
@@ -48,7 +48,7 @@ export interface LoginResponse {
   token?: string;
   user?: {
     id: string;
-    email: string;
+    username: string;
     name: string;
   };
   error?: string;
