@@ -481,7 +481,10 @@ export default function AdminDashboard() {
                   </p>
                 ) : (
                   activities.map((activity, index) => (
-                    <div key={index} className="flex items-start gap-3">
+                    <div
+                      key={activity._id || activity.createdAt || index}
+                      className="flex items-start gap-3"
+                    >
                       <div
                         className={`w-2 h-2 rounded-full mt-2 ${
                           activity.type === "success"

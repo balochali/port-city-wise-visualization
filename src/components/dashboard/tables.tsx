@@ -215,7 +215,7 @@ export default function Tables({
             >
               {cityData.map((city, idx) => (
                 <button
-                  key={idx}
+                  key={city.city}
                   onClick={() => handleCityClick(idx)}
                   className={`flex-shrink-0 px-3 py-1 rounded-md text-sm font-medium transition-all flex items-center gap-1 ${
                     idx === currentIndex
@@ -295,7 +295,7 @@ export default function Tables({
                 <tbody className="bg-white divide-y divide-gray-200">
                   {currentCity.agents.map((row, i) => (
                     <motion.tr
-                      key={i}
+                      key={row.agent}
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: i * 0.1 }}
@@ -378,7 +378,7 @@ export default function Tables({
               }}
             >
               {cityData.map((city, idx) => (
-                <div key={idx} className="flex-shrink-0 min-w-[80px]">
+                <div key={city.city} className="flex-shrink-0 min-w-[80px]">
                   <div className="flex flex-col items-center">
                     <span
                       className={`text-xs mb-1 whitespace-nowrap ${
