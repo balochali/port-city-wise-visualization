@@ -52,6 +52,9 @@ export async function POST(req: NextRequest) {
     // Use header: 1 to get an array of arrays
     const rows = XLSX.utils.sheet_to_json(sheet, { header: 1 }) as any[][];
 
+    // Clear all previous port data before processing new file
+    await PortData.deleteMany({});
+
     let currentCity = "";
     let processedCities = new Set<string>();
 

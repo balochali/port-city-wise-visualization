@@ -135,3 +135,126 @@ export async function POST(request: NextRequest) {
     );
   }
 }
+
+export async function PUT(request: NextRequest) {
+  try {
+    await connectDB();
+
+    // 1. Auth Check
+    let token = "";
+    const authHeader = request.headers.get("Authorization");
+
+    if (authHeader && authHeader.startsWith("Bearer ")) {
+      token = authHeader.split(" ")[1];
+    } else {
+      token = request.cookies.get("token")?.value || "";
+    }
+
+    if (!token) {
+      return NextResponse.json(
+        { success: false, message: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+
+    let decoded: any;
+    try {
+      decoded = verifyToken(token);
+    } catch (e) {
+      return NextResponse.json(
+        { success: false, message: "Invalid token" },
+        { status: 401 }
+      );
+    }
+
+    const userId = decoded.userId;
+    const body = await request.json();
+    const { activeTab, name, username, currentPassword, newPassword } = body;
+
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return NextResponse.json(
+        { success: false, message: "User not found" },
+        { status: 404 }
+      );
+    }
+
+    if (activeTab === "profile") {
+      if (!name || !username) {
+        return NextResponse.json(
+          { success: false, message: "Name and Username are required" },
+          { status: 400 }
+        );
+      }
+
+      // Check if username is taken by another user
+      if (username !== user.username) {
+        const existingUser = await User.findOne({ username });
+        if (existingUser) {
+          return NextResponse.json(
+            { success: false, message: "Username already taken" },
+            { status: 400 }
+          );
+        }
+      }
+
+      user.name = name;
+      user.username = username;
+      await user.save();
+
+      await logActivity(
+        "Profile Update",
+        `User updated profile: ${username}`,
+        user.username,
+        "success"
+      );
+
+      return NextResponse.json({
+        success: true,
+        message: "Profile updated successfully",
+      });
+    } else if (activeTab === "password") {
+      if (!currentPassword || !newPassword) {
+        return NextResponse.json(
+          { success: false, message: "All password fields are required" },
+          { status: 400 }
+        );
+      }
+
+      const isMatch = await user.comparePassword(currentPassword);
+      if (!isMatch) {
+        return NextResponse.json(
+          { success: false, message: "Incorrect current password" },
+          { status: 400 }
+        );
+      }
+
+      user.password = newPassword;
+      await user.save();
+
+      await logActivity(
+        "Password Change",
+        "User changed their password",
+        user.username,
+        "success"
+      );
+
+      return NextResponse.json({
+        success: true,
+        message: "Password updated successfully",
+      });
+    }
+
+    return NextResponse.json(
+      { success: false, message: "Invalid update type" },
+      { status: 400 }
+    );
+  } catch (error) {
+    console.error("Error updating user:", error);
+    return NextResponse.json(
+      { success: false, message: "Internal Server Error" },
+      { status: 500 }
+    );
+  }
+}

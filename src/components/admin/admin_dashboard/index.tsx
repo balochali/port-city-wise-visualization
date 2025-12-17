@@ -13,6 +13,7 @@ export default function AdminDashboard() {
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
 
   const [showAddUserModal, setShowAddUserModal] = useState(false);
   const [newUser, setNewUser] = useState({
@@ -125,32 +126,81 @@ export default function AdminDashboard() {
     if (!selectedFile) return;
 
     setUploading(true);
+    setUploadProgress(0);
 
     const formData = new FormData();
     formData.append("file", selectedFile);
 
     try {
-      const response = await fetch("/api/ports/upload", {
-        method: "POST",
-        body: formData,
+      // Use XMLHttpRequest for progress tracking
+      const xhr = new XMLHttpRequest();
+
+      // Track upload progress (0-50%)
+      xhr.upload.addEventListener("progress", (e) => {
+        if (e.lengthComputable) {
+          const uploadPercent = Math.round((e.loaded / e.total) * 50); // Upload is 0-50%
+          setUploadProgress(uploadPercent);
+        }
       });
 
-      const data = await response.json();
+      // Handle completion
+      xhr.addEventListener("load", () => {
+        if (xhr.status === 200) {
+          // Upload complete, now processing (50-100%)
+          setUploadProgress(50);
 
-      if (data.success) {
-        alert("File uploaded successfully!");
-        setShowUploadModal(false);
-        setSelectedFile(null);
-        // Refresh stats
-        router.refresh();
-      } else {
-        alert(`Upload failed: ${data.message}`);
-      }
+          // Simulate processing progress
+          const processingInterval = setInterval(() => {
+            setUploadProgress((prev) => {
+              if (prev >= 95) {
+                clearInterval(processingInterval);
+                return 95; // Stay at 95% until actual completion
+              }
+              return prev + 5;
+            });
+          }, 200);
+
+          const data = JSON.parse(xhr.responseText);
+          clearInterval(processingInterval);
+
+          if (data.success) {
+            setUploadProgress(100);
+            setTimeout(() => {
+              alert("File uploaded successfully!");
+              setShowUploadModal(false);
+              setSelectedFile(null);
+              setUploadProgress(0);
+              // Refresh stats
+              window.location.reload();
+            }, 500);
+          } else {
+            alert(`Upload failed: ${data.message}`);
+            setUploadProgress(0);
+            setUploading(false);
+          }
+        } else {
+          alert("Upload failed. Please try again.");
+          setUploadProgress(0);
+          setUploading(false);
+        }
+      });
+
+      // Handle errors
+      xhr.addEventListener("error", () => {
+        console.error("Upload error");
+        alert("An error occurred during upload.");
+        setUploading(false);
+        setUploadProgress(0);
+      });
+
+      // Send request
+      xhr.open("POST", "/api/ports/upload");
+      xhr.send(formData);
     } catch (error) {
       console.error("Upload error:", error);
       alert("An error occurred during upload.");
-    } finally {
       setUploading(false);
+      setUploadProgress(0);
     }
   };
 
@@ -221,12 +271,6 @@ export default function AdminDashboard() {
             </div>
 
             <div className="flex items-center gap-3">
-              <button
-                onClick={() => router.push("/dashboard")}
-                className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition"
-              >
-                Dashboard
-              </button>
               <button
                 onClick={handleLogout}
                 className="px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition"
@@ -387,7 +431,7 @@ export default function AdminDashboard() {
               </button>
 
               <button
-                onClick={() => alert("Settings feature coming soon!")}
+                onClick={() => router.push("/admin/dashboard/settings")}
                 className="flex items-center gap-3 p-4 border rounded-lg hover:bg-gray-50 transition text-left"
               >
                 <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
@@ -413,7 +457,7 @@ export default function AdminDashboard() {
                 </div>
                 <div>
                   <p className="font-medium text-gray-900">Settings</p>
-                  <p className="text-sm text-gray-500">Coming Soon</p>
+                  <p className="text-sm text-gray-500">Manage account</p>
                 </div>
               </button>
             </div>
@@ -613,6 +657,33 @@ export default function AdminDashboard() {
                   </svg>
                   <p className="text-sm text-green-700 truncate">
                     {selectedFile.name}
+                  </p>
+                </div>
+              )}
+
+              {/* Progress Bar */}
+              {uploading && (
+                <div className="mt-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-medium text-gray-700">
+                      {uploadProgress < 50
+                        ? "Uploading file..."
+                        : "Processing data..."}
+                    </span>
+                    <span className="text-sm font-medium text-blue-600">
+                      {uploadProgress}%
+                    </span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-2.5 overflow-hidden">
+                    <div
+                      className="bg-blue-600 h-2.5 rounded-full transition-all duration-300 ease-out"
+                      style={{ width: `${uploadProgress}%` }}
+                    ></div>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-2">
+                    {uploadProgress < 50
+                      ? "Uploading your Excel file to the server..."
+                      : "Processing and saving data to database..."}
                   </p>
                 </div>
               )}
