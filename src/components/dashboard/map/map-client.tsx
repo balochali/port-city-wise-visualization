@@ -183,7 +183,7 @@ export default function MapClient({
               center={coords}
               radius={isSelected ? 12 : 8}
               pathOptions={{
-                fillColor: isSelected ? "#3b82f6" : "#60a5fa",
+                fillColor: isSelected ? "#e11d48" : "#f43f5e",
                 color: "#fff",
                 weight: isSelected ? 3 : 2,
                 opacity: 1,
@@ -194,7 +194,7 @@ export default function MapClient({
                   if (!isSelected) {
                     e.target.setStyle({
                       radius: 10,
-                      fillColor: "#3b82f6",
+                      fillColor: "#e11d48",
                     });
                   }
                 },
@@ -202,7 +202,7 @@ export default function MapClient({
                   if (!isSelected) {
                     e.target.setStyle({
                       radius: 8,
-                      fillColor: "#60a5fa",
+                      fillColor: "#f43f5e",
                     });
                   }
                 },
@@ -233,7 +233,7 @@ export default function MapClient({
                       margin: "4px 0 0 0",
                       fontSize: "13px",
                       fontWeight: 600,
-                      color: "#2563eb",
+                      color: "#e11d48",
                     }}
                   >
                     {totalContainers} containers
@@ -246,47 +246,53 @@ export default function MapClient({
       </MapContainer>
 
       {/* Legend - Bottom Left */}
-      <div className="absolute bottom-4 left-4 bg-white/95 backdrop-blur-sm rounded-lg shadow-lg p-3 border border-gray-200 z-[1000]">
-        <h4 className="text-xs font-semibold text-gray-800 mb-2">
+      <div className="absolute bottom-3 lg:bottom-4 2xl:bottom-3 left-3 lg:left-4 2xl:left-3 bg-white/95 backdrop-blur-sm rounded-lg shadow-lg p-2 lg:p-2.5 2xl:p-2 border border-gray-200 z-[1000]">
+        <h4 className="text-[10px] lg:text-xs 2xl:text-[10px] font-semibold text-gray-800 mb-1.5 lg:mb-2 2xl:mb-1.5">
           Port Cities
         </h4>
-        <div className="space-y-1.5">
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-blue-600 border border-white shadow"></div>
-            <span className="text-xs text-gray-600">Selected Port</span>
+        <div className="space-y-1 lg:space-y-1.5 2xl:space-y-1">
+          <div className="flex items-center gap-1.5 lg:gap-2 2xl:gap-1.5">
+            <div className="w-2.5 h-2.5 lg:w-3 lg:h-3 2xl:w-2.5 2xl:h-2.5 rounded-full bg-red-600 border border-white shadow"></div>
+            <span className="text-[10px] lg:text-xs 2xl:text-[10px] text-gray-600">
+              Selected Port
+            </span>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="w-2.5 h-2.5 rounded-full bg-blue-400 border border-white shadow"></div>
-            <span className="text-xs text-gray-600">Other Ports</span>
+          <div className="flex items-center gap-1.5 lg:gap-2 2xl:gap-1.5">
+            <div className="w-2 h-2 lg:w-2.5 lg:h-2.5 2xl:w-2 2xl:h-2 rounded-full bg-red-400 border border-white shadow"></div>
+            <span className="text-[10px] lg:text-xs 2xl:text-[10px] text-gray-600">
+              Other Ports
+            </span>
           </div>
         </div>
       </div>
 
-      {/* Active Port Info - Top Right (Made Smaller) */}
-      <div className="absolute top-3 right-3 bg-white/95 backdrop-blur-sm rounded-lg shadow-lg p-3 border border-gray-200 min-w-[160px] max-w-[180px] z-[1000] border-l-3 border-l-blue-600">
-        <div className="flex items-center justify-between mb-1.5">
-          <div className="flex items-center gap-1.5">
-            <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></div>
-            <span className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">
+      {/* Active Port Info - Top Right */}
+      <div className="absolute top-2 lg:top-3 2xl:top-2 right-2 lg:right-3 2xl:right-2 bg-white/95 backdrop-blur-sm rounded-lg shadow-lg p-2 lg:p-2.5 2xl:p-2 border border-gray-200 min-w-[140px] lg:min-w-[150px] 2xl:min-w-[130px] max-w-[160px] lg:max-w-[170px] 2xl:max-w-[150px] z-[1000] border-l-3 border-l-red-600">
+        <div className="flex items-center justify-between mb-1 lg:mb-1.5 2xl:mb-1">
+          <div className="flex items-center gap-1 lg:gap-1.5 2xl:gap-1">
+            <div className="w-1 h-1 lg:w-1.5 lg:h-1.5 2xl:w-1 2xl:h-1 rounded-full bg-green-500 animate-pulse"></div>
+            <span className="text-[9px] lg:text-[10px] 2xl:text-[9px] font-semibold text-gray-500 uppercase tracking-wide">
               Active Port
             </span>
           </div>
-          <div className="text-[10px] px-1.5 py-0.5 bg-blue-100 text-blue-700 rounded-full font-medium">
+          <div className="text-[9px] lg:text-[10px] 2xl:text-[9px] px-1 lg:px-1.5 2xl:px-1 py-0.5 bg-red-100 text-red-700 rounded-full font-medium">
             Selected
           </div>
         </div>
-        <h3 className="text-lg font-bold text-gray-800 mb-0.5">
+        <h3 className="text-base lg:text-lg 2xl:text-base font-bold text-gray-800 mb-0.5">
           {selectedCity}
         </h3>
-        <p className="text-xs text-gray-500">
+        <p className="text-[10px] lg:text-xs 2xl:text-[10px] text-gray-500">
           {agentCount} active agent{agentCount !== 1 ? "s" : ""}
         </p>
-        <div className="mt-2 pt-2 border-t border-gray-200">
-          <div className="flex items-baseline gap-1.5">
-            <div className="text-xl font-bold text-blue-600">
+        <div className="mt-1.5 lg:mt-2 2xl:mt-1.5 pt-1.5 lg:pt-2 2xl:pt-1.5 border-t border-gray-200">
+          <div className="flex items-baseline gap-1 lg:gap-1.5 2xl:gap-1">
+            <div className="text-lg lg:text-xl 2xl:text-lg font-bold text-red-600">
               {totalContainers.toLocaleString()}
             </div>
-            <div className="text-[10px] text-gray-500">Total Containers</div>
+            <div className="text-[9px] lg:text-[10px] 2xl:text-[9px] text-gray-500">
+              Total Containers
+            </div>
           </div>
         </div>
       </div>

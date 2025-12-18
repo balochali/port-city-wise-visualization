@@ -137,7 +137,7 @@ export default function AdminSettings() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+        <div className="w-12 h-12 border-4 border-red-600 border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
@@ -179,7 +179,7 @@ export default function AdminSettings() {
                 onClick={() => setActiveTab("users")}
                 className={`flex-1 px-6 py-4 text-sm font-medium transition ${
                   activeTab === "users"
-                    ? "text-blue-600 border-b-2 border-blue-600 bg-blue-50"
+                    ? "text-red-600 border-b-2 border-red-600 bg-red-50"
                     : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
                 }`}
               >
@@ -190,7 +190,7 @@ export default function AdminSettings() {
               onClick={() => setActiveTab("password")}
               className={`flex-1 px-6 py-4 text-sm font-medium transition ${
                 activeTab === "password"
-                  ? "text-blue-600 border-b-2 border-blue-600 bg-blue-50"
+                  ? "text-red-600 border-b-2 border-red-600 bg-red-50"
                   : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
               }`}
             >
@@ -276,7 +276,7 @@ export default function AdminSettings() {
                         currentPassword: e.target.value,
                       })
                     }
-                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
                   />
                 </div>
                 <div>
@@ -294,7 +294,7 @@ export default function AdminSettings() {
                         newPassword: e.target.value,
                       })
                     }
-                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
                   />
                 </div>
                 <div>
@@ -312,7 +312,7 @@ export default function AdminSettings() {
                         confirmPassword: e.target.value,
                       })
                     }
-                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
                   />
                 </div>
 
@@ -320,7 +320,7 @@ export default function AdminSettings() {
                   <button
                     type="submit"
                     disabled={saving}
-                    className="px-6 py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                    className="px-6 py-2.5 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                   >
                     {saving && (
                       <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>

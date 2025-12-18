@@ -179,23 +179,23 @@ export default function Tables({
     <div
       className={`${lexend.className} w-full h-full flex flex-col bg-white rounded-sm shadow-sm border border-gray-100 overflow-hidden`}
     >
-      <div className="bg-white border-b border-gray-200 px-6 py-4">
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex-shrink-0">
-            <h2 className="text-lg font-semibold text-gray-800">
+      <div className="bg-white border-b border-gray-200 px-3 lg:px-4 py-2 lg:py-3">
+        <div className="flex items-center justify-between gap-2 lg:gap-3">
+          <div className="flex-shrink-0 min-w-0">
+            <h2 className="text-sm lg:text-base xl:text-lg font-semibold text-gray-800 truncate">
               Port Container Data
             </h2>
-            <div className="flex items-center gap-2 mt-1">
+            <div className="flex items-center gap-1.5 lg:gap-2 mt-0.5 flex-wrap">
               <div className="flex items-center gap-1">
-                <div className="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></div>
-                <span className="text-xs text-gray-500">
+                <div className="w-1.5 h-1.5 rounded-full bg-red-600 animate-pulse"></div>
+                <span className="text-[10px] lg:text-xs text-gray-500 whitespace-nowrap">
                   Currently viewing: <strong>{selectedCity}</strong>
                 </span>
               </div>
               {!isAutoRotating && (
                 <button
                   onClick={handleResumeAutoRotation}
-                  className="text-xs px-2 py-1 bg-green-100 text-green-700 rounded hover:bg-green-200"
+                  className="text-[10px] lg:text-xs px-1.5 lg:px-2 py-0.5 bg-green-100 text-green-700 rounded hover:bg-green-200 whitespace-nowrap"
                 >
                   Resume Auto-Rotation
                 </button>
@@ -204,10 +204,10 @@ export default function Tables({
           </div>
 
           {/* Scrollable City Buttons */}
-          <div className="flex-1 overflow-hidden">
+          <div className="flex-1 overflow-hidden min-w-0">
             <div
               ref={scrollContainerRef}
-              className="flex items-center gap-2 overflow-x-auto scrollbar-hide pb-1"
+              className="flex items-center gap-1.5 lg:gap-2 overflow-x-auto scrollbar-hide pb-1"
               style={{
                 scrollbarWidth: "none",
                 msOverflowStyle: "none",
@@ -217,9 +217,9 @@ export default function Tables({
                 <button
                   key={city.city}
                   onClick={() => handleCityClick(idx)}
-                  className={`flex-shrink-0 px-3 py-1 rounded-md text-sm font-medium transition-all flex items-center gap-1 ${
+                  className={`flex-shrink-0 px-2 lg:px-2.5 py-0.5 lg:py-1 rounded-md text-[11px] lg:text-xs xl:text-sm font-medium transition-all flex items-center gap-1 ${
                     idx === currentIndex
-                      ? "bg-blue-600 text-white shadow-sm"
+                      ? "bg-red-600 text-white shadow-sm"
                       : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                   }`}
                 >
@@ -247,26 +247,30 @@ export default function Tables({
               ease: "easeInOut",
             }}
             ref={contentRef} // Attached ref here for scrolling
-            className="absolute inset-0 overflow-auto p-6 scrollbar-hide"
+            className="absolute inset-0 overflow-auto p-3 lg:p-4 xl:p-5 scrollbar-hide"
           >
-            <div className="mb-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
-                    <span className="text-blue-600">{currentCity.city}</span>
-                    <div className="w-3 h-3 rounded-full bg-green-500 animate-pulse"></div>
+            <div className="mb-3 lg:mb-4">
+              <div className="flex items-center justify-between gap-2">
+                <div className="min-w-0">
+                  <h3 className="text-base lg:text-lg xl:text-xl font-bold text-gray-800 flex items-center gap-1.5">
+                    <span className="text-red-600">{currentCity.city}</span>
+                    <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
                   </h3>
-                  <p className="text-sm text-gray-500 mt-1">
+                  <p className="text-[11px] lg:text-xs xl:text-sm text-gray-500 mt-0.5">
                     {currentCity.agents.length} agents •{" "}
                     {currentCity.agents.reduce((sum, a) => sum + a.total, 0)}{" "}
                     total containers
                   </p>
                 </div>
-                <div className="text-right">
-                  <div className="text-xs text-gray-500">Active on Map</div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-4 h-4 rounded-full bg-blue-600 border-2 border-white shadow-lg"></div>
-                    <span className="text-sm font-medium">Selected Port</span>
+                <div className="text-right flex-shrink-0">
+                  <div className="text-[10px] lg:text-xs text-gray-500">
+                    Active on Map
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-2.5 h-2.5 lg:w-3 lg:h-3 rounded-full bg-red-600 border-2 border-white shadow-lg"></div>
+                    <span className="text-[11px] lg:text-xs xl:text-sm font-medium whitespace-nowrap">
+                      Selected Port
+                    </span>
                   </div>
                 </div>
               </div>
@@ -276,18 +280,18 @@ export default function Tables({
               <table className="w-full">
                 <thead>
                   <tr className="bg-gray-100 border-b border-gray-200">
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    <th className="px-2 lg:px-3 py-2 lg:py-2.5 text-left text-[10px] lg:text-xs font-semibold text-gray-600 uppercase tracking-wider">
                       Agent
                     </th>
                     {columns.map((col) => (
                       <th
                         key={col.key}
-                        className="px-3 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider"
+                        className="px-1.5 lg:px-2 py-2 lg:py-2.5 text-center text-[10px] lg:text-xs font-semibold text-gray-600 uppercase tracking-wide"
                       >
                         {col.label}
                       </th>
                     ))}
-                    <th className="px-3 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    <th className="px-2 lg:px-3 py-2 lg:py-2.5 text-center text-[10px] lg:text-xs font-semibold text-gray-600 uppercase tracking-wider">
                       Total
                     </th>
                   </tr>
@@ -299,15 +303,15 @@ export default function Tables({
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: i * 0.1 }}
-                      className="hover:bg-blue-50 transition-colors"
+                      className="hover:bg-red-50 transition-colors"
                     >
-                      <td className="px-4 py-3 font-medium text-gray-800 text-sm">
+                      <td className="px-2 lg:px-3 py-2 lg:py-2.5 font-medium text-gray-800 text-xs lg:text-sm">
                         {row.agent}
                       </td>
                       {columns.map((col) => (
                         <td
                           key={col.key}
-                          className="px-3 py-3 text-center text-sm text-gray-600"
+                          className="px-1.5 lg:px-2 py-2 lg:py-2.5 text-center text-xs lg:text-sm text-gray-600"
                         >
                           {row[col.key] === 0 ? (
                             <span className="text-gray-300">0</span>
@@ -316,15 +320,15 @@ export default function Tables({
                           )}
                         </td>
                       ))}
-                      <td className="px-3 py-3 text-center font-bold text-sm text-blue-600 bg-blue-50">
+                      <td className="px-2 lg:px-3 py-2 lg:py-2.5 text-center font-bold text-xs lg:text-sm text-red-600 bg-red-50">
                         {row.total}
                       </td>
                     </motion.tr>
                   ))}
                 </tbody>
                 <tfoot>
-                  <tr className="bg-blue-50 border-t border-blue-100">
-                    <td className="px-4 py-3 font-bold text-gray-800 text-sm">
+                  <tr className="bg-red-50 border-t border-red-100">
+                    <td className="px-2 lg:px-3 py-2 lg:py-2.5 font-bold text-gray-800 text-xs lg:text-sm">
                       City Total
                     </td>
                     {columns.map((col) => {
@@ -335,13 +339,13 @@ export default function Tables({
                       return (
                         <td
                           key={col.key}
-                          className="px-3 py-3 text-center font-bold text-sm text-gray-700"
+                          className="px-1.5 lg:px-2 py-2 lg:py-2.5 text-center font-bold text-xs lg:text-sm text-gray-700"
                         >
                           {colSum}
                         </td>
                       );
                     })}
-                    <td className="px-3 py-3 text-center font-bold text-lg text-blue-700 bg-blue-100">
+                    <td className="px-2 lg:px-3 py-2 lg:py-2.5 text-center font-bold text-sm lg:text-base xl:text-lg text-red-700 bg-red-100">
                       {currentCity.agents.reduce((sum, a) => sum + a.total, 0)}
                     </td>
                   </tr>
@@ -352,15 +356,15 @@ export default function Tables({
         </AnimatePresence>
       </div>
 
-      <div className="bg-white border-t border-gray-200 px-6 py-3">
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-2 flex-shrink-0">
+      <div className="bg-white border-t border-gray-200 px-3 lg:px-4 py-2 lg:py-2.5">
+        <div className="flex items-center justify-between gap-2 lg:gap-3">
+          <div className="flex items-center gap-1.5 lg:gap-2 flex-shrink-0">
             <div
-              className={`w-2 h-2 rounded-full ${
+              className={`w-1.5 h-1.5 lg:w-2 lg:h-2 rounded-full ${
                 isAutoRotating ? "bg-green-500 animate-pulse" : "bg-gray-400"
               }`}
             ></div>
-            <span className="text-xs text-gray-600 whitespace-nowrap">
+            <span className="text-[10px] lg:text-xs text-gray-600 whitespace-nowrap">
               {isAutoRotating
                 ? "Auto-rotating every 5s"
                 : "Auto-rotation paused"}
@@ -378,21 +382,24 @@ export default function Tables({
               }}
             >
               {cityData.map((city, idx) => (
-                <div key={city.city} className="flex-shrink-0 min-w-[80px]">
+                <div
+                  key={city.city}
+                  className="flex-shrink-0 min-w-[60px] lg:min-w-[70px]"
+                >
                   <div className="flex flex-col items-center">
                     <span
-                      className={`text-xs mb-1 whitespace-nowrap ${
+                      className={`text-[10px] lg:text-xs mb-0.5 lg:mb-1 whitespace-nowrap ${
                         idx === currentIndex
-                          ? "font-semibold text-blue-600"
+                          ? "font-semibold text-red-600"
                           : "text-gray-500"
                       }`}
                     >
                       {city.city}
                     </span>
-                    <div className="w-full h-1.5 rounded-full bg-gray-200 overflow-hidden">
+                    <div className="w-full h-1 lg:h-1.5 rounded-full bg-gray-200 overflow-hidden">
                       {idx === currentIndex && (
                         <motion.div
-                          className="h-full bg-blue-600"
+                          className="h-full bg-red-600"
                           initial={{ width: "0%" }}
                           animate={{ width: isAutoRotating ? "100%" : "100%" }}
                           transition={{
@@ -408,7 +415,7 @@ export default function Tables({
             </div>
           </div>
 
-          <div className="text-xs text-gray-500 flex-shrink-0 whitespace-nowrap">
+          <div className="text-[10px] lg:text-xs text-gray-500 flex-shrink-0 whitespace-nowrap">
             {currentIndex + 1} of {cityData.length}
           </div>
         </div>

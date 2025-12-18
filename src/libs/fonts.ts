@@ -1,5 +1,5 @@
 // app/fonts/font.ts
-import { Lexend, Josefin_Sans } from "next/font/google";
+import { Lexend, Josefin_Sans, Amiri } from "next/font/google";
 
 export const lexend = Lexend({
   subsets: ["latin"],
@@ -9,4 +9,10 @@ export const lexend = Lexend({
 export const josefin_sans = Josefin_Sans({
   subsets: ["latin"],
   variable: "--font-josefin-sans",
+});
+
+export const amiri = Amiri({
+  subsets: ["arabic"],
+  weight: ["400", "700"],
+  variable: "--font-amiri",
 });

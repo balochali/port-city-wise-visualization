@@ -2,6 +2,7 @@
 
 import MapWrapper from "./map/map-wrapper";
 import Tables from "./tables";
+import ContainerChart from "./chart";
 import { useState, useEffect } from "react";
 import { lexend } from "@/libs/fonts";
 
@@ -34,7 +35,7 @@ export default function Dashboard() {
   if (loading) {
     return (
       <div className="h-[calc(100vh-11rem)] flex items-center justify-center bg-gray-50">
-        <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+        <div className="w-10 h-10 border-4 border-red-600 border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
@@ -52,30 +53,37 @@ export default function Dashboard() {
 
   return (
     <div
-      className={`${lexend.className} flex flex-col gap-4 h-[calc(100vh-11rem)] p-8 bg-gray-50`}
+      className={`${lexend.className} flex flex-col gap-2 lg:gap-3 h-[calc(100vh-9rem)] lg:h-[calc(100vh-11rem)] px-3 lg:px-4 xl:px-5 pb-3 lg:pb-4 xl:pb-5 pt-1 lg:pt-2 bg-gray-50`}
     >
-      <div className="text-center mb-2">
-        <h1 className="text-2xl font-bold text-gray-800">
-          Shipping Dashboard - Currently Viewing:{" "}
-          <span className="text-blue-600">{currentCity}</span>
-        </h1>
-        <p className="text-gray-600">
-          Click on any city tab to view detailed container data
-        </p>
-      </div>
-
-      <div className="flex gap-4 flex-1">
-        <div className="w-2/3">
-          <Tables
-            cityData={portData}
-            currentIndex={currentCityIndex}
-            onCityChange={setCurrentCityIndex}
-            selectedCity={currentCity}
-          />
+      <div className="max-w-[2400px] mx-auto w-full flex flex-col gap-2 lg:gap-3 flex-1">
+        <div className="text-center mb-1">
+          <h1 className="text-base lg:text-xl xl:text-2xl font-bold text-gray-800">
+            Agent City Wise Summary - Currently Viewing:{" "}
+            <span className="text-red-600">{currentCity}</span>
+          </h1>
+          <p className="text-gray-600 text-xs lg:text-sm xl:text-base">
+            Click on any city tab to view detailed container data
+          </p>
         </div>
 
-        <div className="w-1/3 bg-white shadow-sm rounded-sm border border-gray-100">
-          <MapWrapper selectedCity={currentCity} cityData={portData} />
+        <div className="flex gap-2 lg:gap-3 xl:gap-4 flex-1 min-h-0">
+          <div className="flex-1 min-w-[500px] max-w-[65%]">
+            <Tables
+              cityData={portData}
+              currentIndex={currentCityIndex}
+              onCityChange={setCurrentCityIndex}
+              selectedCity={currentCity}
+            />
+          </div>
+
+          <div className="flex-1 min-w-[300px] max-w-[35%] flex flex-col gap-2 lg:gap-3">
+            <div className="h-1/2 bg-white shadow-sm rounded-sm border border-gray-100 overflow-hidden">
+              <MapWrapper selectedCity={currentCity} cityData={portData} />
+            </div>
+            <div className="h-1/2 bg-white shadow-sm rounded-sm border border-gray-100 overflow-hidden">
+              <ContainerChart cityData={portData[currentCityIndex]} />
+            </div>
+          </div>
         </div>
       </div>
     </div>

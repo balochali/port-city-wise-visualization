@@ -85,7 +85,7 @@ export default function Login() {
       <div className="w-full max-w-md bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
         {/* Header */}
         <div className="flex items-center gap-3 px-6 py-5 border-b bg-white">
-          <div className="w-10 h-10 bg-blue-600 rounded-md flex items-center justify-center">
+          <div className="w-10 h-10 bg-red-600 rounded-md flex items-center justify-center">
             <span className="text-white font-bold text-lg">P</span>
           </div>
           <div>
@@ -109,7 +109,7 @@ export default function Login() {
               onChange={handleChange}
               required
               placeholder="Enter your username"
-              className="w-full px-4 py-2.5 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-800"
+              className="w-full px-4 py-2.5 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 text-gray-800"
             />
           </div>
 
@@ -124,7 +124,7 @@ export default function Login() {
               onChange={handleChange}
               required
               placeholder="Enter your password"
-              className="w-full px-4 py-2.5 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-800"
+              className="w-full px-4 py-2.5 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 text-gray-800"
             />
           </div>
 
@@ -137,7 +137,7 @@ export default function Login() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-2.5 rounded-md bg-blue-600 text-white font-semibold hover:bg-blue-700 transition disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-2"
+            className="w-full py-2.5 rounded-md bg-red-600 text-white font-semibold hover:bg-red-700 transition disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-2"
           >
             {loading ? (
               <>
@@ -381,7 +381,7 @@ export default function Login() {
 //               Already have an account?{" "}
 //               <Link
 //                 href="/login"
-//                 className="text-blue-600 hover:text-blue-800 font-medium"
+//                 className="text-red-600 hover:text-red-800 font-medium"
 //               >
 //                 Login here
 //               </Link>
