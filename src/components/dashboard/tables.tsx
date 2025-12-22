@@ -6,6 +6,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { CityBlock } from "@/types/types";
 import { lexend } from "@/libs/fonts";
+import { CONTAINER_LIMIT } from "@/libs/constants";
 
 interface TablesProps {
   cityData: CityBlock[];
@@ -153,6 +154,13 @@ export default function Tables({
   }, [currentIndex]);
 
   const currentCity = cityData[currentIndex];
+  const isCityOverLimit = columns.some((col) => {
+    const colSum = currentCity.agents.reduce(
+      (sum, agent) => sum + (Number(agent[col.key]) || 0),
+      0
+    );
+    return colSum > CONTAINER_LIMIT;
+  });
 
   const fadeVariants = {
     initial: {
@@ -187,7 +195,11 @@ export default function Tables({
             </h2>
             <div className="flex items-center gap-1.5 lg:gap-2 mt-0.5 flex-wrap">
               <div className="flex items-center gap-1">
-                <div className="w-1.5 h-1.5 rounded-full bg-red-600 animate-pulse"></div>
+                <div
+                  className={`w-1.5 h-1.5 rounded-full animate-pulse ${
+                    isCityOverLimit ? "animate-flicker" : "bg-red-600"
+                  }`}
+                ></div>
                 <span className="text-[10px] lg:text-xs text-gray-500 whitespace-nowrap">
                   Currently viewing: <strong>{selectedCity}</strong>
                 </span>
@@ -219,7 +231,9 @@ export default function Tables({
                   onClick={() => handleCityClick(idx)}
                   className={`flex-shrink-0 px-2 lg:px-2.5 py-0.5 lg:py-1 rounded-md text-[11px] lg:text-xs xl:text-sm font-medium transition-all flex items-center gap-1 ${
                     idx === currentIndex
-                      ? "bg-red-600 text-white shadow-sm"
+                      ? isCityOverLimit
+                        ? "animate-flicker shadow-sm"
+                        : "bg-red-600 text-white shadow-sm"
                       : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                   }`}
                 >
@@ -253,8 +267,18 @@ export default function Tables({
               <div className="flex items-center justify-between gap-2">
                 <div className="min-w-0">
                   <h3 className="text-base lg:text-lg xl:text-xl font-bold text-gray-800 flex items-center gap-1.5">
-                    <span className="text-red-600">{currentCity.city}</span>
-                    <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                    <span
+                      className={`transition-colors rounded px-1 ${
+                        isCityOverLimit ? "animate-flicker" : "text-red-600"
+                      }`}
+                    >
+                      {currentCity.city}
+                    </span>
+                    <div
+                      className={`w-2 h-2 rounded-full animate-pulse ${
+                        isCityOverLimit ? "bg-yellow-500" : "bg-green-500"
+                      }`}
+                    ></div>
                   </h3>
                   <p className="text-[11px] lg:text-xs xl:text-sm text-gray-500 mt-0.5">
                     {currentCity.agents.length} agents •{" "}
@@ -267,8 +291,16 @@ export default function Tables({
                     Active on Map
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <div className="w-2.5 h-2.5 lg:w-3 lg:h-3 rounded-full bg-red-600 border-2 border-white shadow-lg"></div>
-                    <span className="text-[11px] lg:text-xs xl:text-sm font-medium whitespace-nowrap">
+                    <div
+                      className={`w-2.5 h-2.5 lg:w-3 lg:h-3 rounded-full border-2 border-white shadow-lg ${
+                        isCityOverLimit ? "animate-flicker" : "bg-red-600"
+                      }`}
+                    ></div>
+                    <span
+                      className={`text-[11px] lg:text-xs xl:text-sm font-medium whitespace-nowrap ${
+                        isCityOverLimit ? "animate-flicker rounded px-1" : ""
+                      }`}
+                    >
                       Selected Port
                     </span>
                   </div>
@@ -283,14 +315,23 @@ export default function Tables({
                     <th className="px-2 lg:px-3 py-2 lg:py-2.5 text-left text-[10px] lg:text-xs font-semibold text-gray-600 uppercase tracking-wider">
                       Agent
                     </th>
-                    {columns.map((col) => (
-                      <th
-                        key={col.key}
-                        className="px-1.5 lg:px-2 py-2 lg:py-2.5 text-center text-[10px] lg:text-xs font-semibold text-gray-600 uppercase tracking-wide"
-                      >
-                        {col.label}
-                      </th>
-                    ))}
+                    {columns.map((col) => {
+                      const colSum = currentCity.agents.reduce(
+                        (sum, agent) => sum + (Number(agent[col.key]) || 0),
+                        0
+                      );
+                      const isOverLimit = colSum > CONTAINER_LIMIT;
+                      return (
+                        <th
+                          key={col.key}
+                          className={`px-1.5 lg:px-2 py-2 lg:py-2.5 text-center text-[10px] lg:text-xs font-semibold uppercase tracking-wide transition-colors ${
+                            isOverLimit ? "animate-flicker" : "text-gray-600"
+                          }`}
+                        >
+                          {col.label}
+                        </th>
+                      );
+                    })}
                     <th className="px-2 lg:px-3 py-2 lg:py-2.5 text-center text-[10px] lg:text-xs font-semibold text-gray-600 uppercase tracking-wider">
                       Total
                     </th>
@@ -333,13 +374,16 @@ export default function Tables({
                     </td>
                     {columns.map((col) => {
                       const colSum = currentCity.agents.reduce(
-                        (sum, agent) => sum + (agent[col.key] || 0),
+                        (sum, agent) => sum + (Number(agent[col.key]) || 0),
                         0
                       );
+                      const isOverLimit = colSum > CONTAINER_LIMIT;
                       return (
                         <td
                           key={col.key}
-                          className="px-1.5 lg:px-2 py-2 lg:py-2.5 text-center font-bold text-xs lg:text-sm text-gray-700"
+                          className={`px-1.5 lg:px-2 py-2 lg:py-2.5 text-center font-bold text-xs lg:text-sm transition-colors ${
+                            isOverLimit ? "animate-flicker" : "text-gray-700"
+                          }`}
                         >
                           {colSum}
                         </td>
@@ -381,37 +425,51 @@ export default function Tables({
                 msOverflowStyle: "none",
               }}
             >
-              {cityData.map((city, idx) => (
-                <div
-                  key={city.city}
-                  className="flex-shrink-0 min-w-[60px] lg:min-w-[70px]"
-                >
-                  <div className="flex flex-col items-center">
-                    <span
-                      className={`text-[10px] lg:text-xs mb-0.5 lg:mb-1 whitespace-nowrap ${
-                        idx === currentIndex
-                          ? "font-semibold text-red-600"
-                          : "text-gray-500"
-                      }`}
-                    >
-                      {city.city}
-                    </span>
-                    <div className="w-full h-1 lg:h-1.5 rounded-full bg-gray-200 overflow-hidden">
-                      {idx === currentIndex && (
-                        <motion.div
-                          className="h-full bg-red-600"
-                          initial={{ width: "0%" }}
-                          animate={{ width: isAutoRotating ? "100%" : "100%" }}
-                          transition={{
-                            duration: isAutoRotating ? 5 : 0,
-                            ease: "linear",
-                          }}
-                        />
-                      )}
+              {cityData.map((city, idx) => {
+                const hasExceedingColumn = columns.some((col) => {
+                  const colSum = city.agents.reduce(
+                    (sum, agent) => sum + (Number(agent[col.key]) || 0),
+                    0
+                  );
+                  return colSum > CONTAINER_LIMIT;
+                });
+
+                return (
+                  <div
+                    key={city.city}
+                    className="flex-shrink-0 min-w-[60px] lg:min-w-[70px]"
+                  >
+                    <div className="flex flex-col items-center">
+                      <span
+                        className={`text-[10px] lg:text-xs mb-0.5 lg:mb-1 whitespace-nowrap transition-colors rounded px-1 ${
+                          hasExceedingColumn
+                            ? "animate-flicker"
+                            : idx === currentIndex
+                            ? "font-semibold text-red-600"
+                            : "text-gray-500"
+                        }`}
+                      >
+                        {city.city}
+                      </span>
+                      <div className="w-full h-1 lg:h-1.5 rounded-full bg-gray-200 overflow-hidden">
+                        {idx === currentIndex && (
+                          <motion.div
+                            className="h-full bg-red-600"
+                            initial={{ width: "0%" }}
+                            animate={{
+                              width: isAutoRotating ? "100%" : "100%",
+                            }}
+                            transition={{
+                              duration: isAutoRotating ? 5 : 0,
+                              ease: "linear",
+                            }}
+                          />
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
 

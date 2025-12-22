@@ -13,6 +13,7 @@ import {
 } from "recharts";
 import { CityBlock } from "@/types/types";
 import { lexend } from "@/libs/fonts";
+import { CONTAINER_LIMIT } from "@/libs/constants";
 
 interface ChartProps {
   cityData: CityBlock;
@@ -44,13 +45,25 @@ export default function ContainerChart({ cityData }: ChartProps) {
     };
   });
 
+  const isAnyOverLimit = chartData.some((d) => d.value > CONTAINER_LIMIT);
+
   return (
     <div
       className={`${lexend.className} w-full h-full flex flex-col p-3 lg:p-4`}
     >
       <h3 className="text-sm lg:text-base font-semibold text-gray-800 mb-3 flex items-center gap-2">
-        <span className="w-2 h-2 rounded-full bg-red-600"></span>
-        Container Type Distribution
+        <span
+          className={`w-2 h-2 rounded-full ${
+            isAnyOverLimit ? "animate-flicker" : "bg-red-600"
+          }`}
+        ></span>
+        <span
+          className={`transition-colors rounded px-1 ${
+            isAnyOverLimit ? "animate-flicker" : ""
+          }`}
+        >
+          Container Type Distribution
+        </span>
       </h3>
       <div className="flex-1 min-h-0 w-full">
         <ResponsiveContainer width="100%" height="100%">
@@ -87,12 +100,22 @@ export default function ContainerChart({ cityData }: ChartProps) {
               }}
             />
             <Bar dataKey="value" radius={[4, 4, 0, 0]}>
-              {chartData.map((entry, index) => (
-                <Cell
-                  key={`cell-${index}`}
-                  fill={entry.value > 0 ? "#e11d48" : "#f1f5f9"}
-                />
-              ))}
+              {chartData.map((entry, index) => {
+                const isOverLimit = entry.value > CONTAINER_LIMIT;
+                return (
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={
+                      isOverLimit
+                        ? "#eab308"
+                        : entry.value > 0
+                        ? "#e11d48"
+                        : "#f1f5f9"
+                    }
+                    className={isOverLimit ? "animate-flicker" : ""}
+                  />
+                );
+              })}
             </Bar>
           </BarChart>
         </ResponsiveContainer>

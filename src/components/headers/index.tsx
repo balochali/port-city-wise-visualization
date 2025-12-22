@@ -37,29 +37,34 @@ export default function Header() {
   return (
     <header className={`${lexend.className} w-full bg-white`}>
       <div className="px-4 lg:px-6 2xl:px-5 pt-4 lg:pt-6 2xl:pt-5 pb-0 lg:pb-0 2xl:pb-0">
-        {/* Bismillah */}
-        <div className="flex justify-center mb-2">
-          <span
-            className={`${amiri.className} text-gray-600 font-medium text-2xl lg:text-3xl animate-fade-in-out`}
-          >
-            بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ
-          </span>
-        </div>
         {/* Top Row */}
-        <div className="flex items-center justify-between">
-          {/* Logo + Title */}
-          <div className="flex items-center gap-3 lg:gap-4 2xl:gap-3">
+        <div className="flex items-center justify-between gap-4">
+          {/* Logo */}
+          <div className="flex-shrink-0">
             <Image
-              src="/logo.jpg"
-              width={300}
+              src="/logo.svg"
+              width={600}
               height={300}
               alt="Company Logo"
-              className="2xl:w-20 2xl:h-20"
+              priority
+              className="w-28 lg:w-40 2xl:w-48 min-[1920px]:w-64 min-[3840px]:w-80 h-auto object-contain"
+            />
+          </div>
+
+          {/* Bismillah Video */}
+          <div className="flex-1 flex justify-center -mt-4 lg:-mt-6 2xl:-mt-8">
+            <video
+              src="/bismillah.mp4"
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="w-48 lg:w-72 2xl:w-80 min-[1920px]:w-[28rem] min-[3840px]:w-[36rem] h-auto object-contain mix-blend-multiply"
             />
           </div>
 
           {/* Live Time + Date */}
-          <div className="text-right">
+          <div className="text-right flex-shrink-0">
             <div className="text-lg lg:text-xl 2xl:text-lg font-bold text-gray-800">
               {currentTime}
             </div>

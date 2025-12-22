@@ -5,6 +5,7 @@ import Tables from "./tables";
 import ContainerChart from "./chart";
 import { useState, useEffect } from "react";
 import { lexend } from "@/libs/fonts";
+import { CONTAINER_LIMIT } from "@/libs/constants";
 
 export default function Dashboard() {
   const [currentCityIndex, setCurrentCityIndex] = useState(0);
@@ -51,6 +52,32 @@ export default function Dashboard() {
 
   const currentCity = portData[currentCityIndex]?.city || "";
 
+  const isCityOverLimit =
+    portData[currentCityIndex]?.agents.some((agent) => {
+      // Check if any specific container type in ANY agent's row?
+      // Actually the limit is usually on the column total for the city.
+      // Let's calculate column totals.
+      const columns = [
+        "20GP",
+        "40HC",
+        "20RF",
+        "40RF",
+        "20OT",
+        "40OT",
+        "20FR",
+        "40FR",
+        "20TK",
+        "45HC",
+      ];
+      return columns.some((col) => {
+        const colSum = portData[currentCityIndex].agents.reduce(
+          (sum, a) => sum + (Number(a[col as keyof typeof a]) || 0),
+          0
+        );
+        return colSum > CONTAINER_LIMIT;
+      });
+    }) || false;
+
   return (
     <div
       className={`${lexend.className} flex flex-col gap-2 lg:gap-3 h-[calc(100vh-9rem)] lg:h-[calc(100vh-11rem)] px-3 lg:px-4 xl:px-5 pb-3 lg:pb-4 xl:pb-5 pt-1 lg:pt-2 bg-gray-50`}
@@ -59,7 +86,13 @@ export default function Dashboard() {
         <div className="text-center mb-1">
           <h1 className="text-base lg:text-xl xl:text-2xl font-bold text-gray-800">
             Agent City Wise Summary - Currently Viewing:{" "}
-            <span className="text-red-600">{currentCity}</span>
+            <span
+              className={`transition-colors rounded px-1 ${
+                isCityOverLimit ? "animate-flicker" : "text-red-600"
+              }`}
+            >
+              {currentCity}
+            </span>
           </h1>
           <p className="text-gray-600 text-xs lg:text-sm xl:text-base">
             Click on any city tab to view detailed container data
