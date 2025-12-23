@@ -10,6 +10,7 @@ import {
   Tooltip,
   ResponsiveContainer,
   Cell,
+  LabelList,
 } from "recharts";
 import { CityBlock } from "@/types/types";
 import { lexend } from "@/libs/fonts";
@@ -69,7 +70,7 @@ export default function ContainerChart({ cityData }: ChartProps) {
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
             data={chartData}
-            margin={{ top: 5, right: 10, left: -20, bottom: 20 }}
+            margin={{ top: 20, right: 10, left: -20, bottom: 20 }}
           >
             <CartesianGrid
               strokeDasharray="3 3"
@@ -80,7 +81,7 @@ export default function ContainerChart({ cityData }: ChartProps) {
               dataKey="name"
               axisLine={false}
               tickLine={false}
-              tick={{ fontSize: 10, fill: "#6b7280" }}
+              tick={{ fontSize: 12, fill: "#6b7280" }}
               interval={0}
               angle={-45}
               textAnchor="end"
@@ -88,7 +89,7 @@ export default function ContainerChart({ cityData }: ChartProps) {
             <YAxis
               axisLine={false}
               tickLine={false}
-              tick={{ fontSize: 10, fill: "#6b7280" }}
+              tick={{ fontSize: 12, fill: "#6b7280" }}
             />
             <Tooltip
               cursor={{ fill: "transparent" }}
@@ -116,6 +117,16 @@ export default function ContainerChart({ cityData }: ChartProps) {
                   />
                 );
               })}
+              <LabelList
+                dataKey="value"
+                position="top"
+                offset={10}
+                style={{
+                  fontSize: "12px",
+                  fontWeight: "bold",
+                  fill: "#374151",
+                }}
+              />
             </Bar>
           </BarChart>
         </ResponsiveContainer>
