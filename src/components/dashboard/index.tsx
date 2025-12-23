@@ -35,7 +35,7 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <div className="h-[calc(100vh-11rem)] flex items-center justify-center bg-gray-50">
+      <div className="flex-1 flex items-center justify-center bg-gray-50">
         <div className="w-10 h-10 border-4 border-red-600 border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
@@ -43,7 +43,7 @@ export default function Dashboard() {
 
   if (portData.length === 0) {
     return (
-      <div className="h-[calc(100vh-11rem)] flex flex-col items-center justify-center bg-gray-50 text-gray-500">
+      <div className="flex-1 flex flex-col items-center justify-center bg-gray-50 text-gray-500">
         <p className="text-lg font-medium">No Data Available</p>
         <p className="text-sm">Please upload data from the admin panel.</p>
       </div>
@@ -80,9 +80,9 @@ export default function Dashboard() {
 
   return (
     <div
-      className={`${lexend.className} flex flex-col gap-2 lg:gap-3 h-[calc(100vh-9rem)] lg:h-[calc(100vh-11rem)] px-3 lg:px-4 xl:px-5 pb-3 lg:pb-4 xl:pb-5 pt-1 lg:pt-2 bg-gray-50`}
+      className={`${lexend.className} flex flex-col gap-2 lg:gap-3 flex-1 px-3 lg:px-4 xl:px-5 pb-3 lg:pb-3 xl:pb-4 pt-1 lg:pt-2 bg-gray-50 overflow-hidden`}
     >
-      <div className="max-w-[2400px] mx-auto w-full flex flex-col gap-2 lg:gap-3 flex-1">
+      <div className="mx-auto w-full flex flex-col gap-2 lg:gap-3 flex-1 min-h-0">
         <div className="text-center mb-1">
           <h1 className="text-base lg:text-xl xl:text-2xl font-bold text-gray-800">
             Agent City Wise Summary - Currently Viewing:{" "}
@@ -109,11 +109,11 @@ export default function Dashboard() {
             />
           </div>
 
-          <div className="flex-1 min-w-[300px] max-w-[35%] flex flex-col gap-2 lg:gap-3">
-            <div className="h-1/2 bg-white shadow-sm rounded-sm border border-gray-100 overflow-hidden">
+          <div className="flex-1 min-w-[300px] max-w-[40%] flex flex-col gap-2 lg:gap-3">
+            <div className="flex-1 bg-white shadow-sm rounded-sm border border-gray-100 overflow-hidden">
               <MapWrapper selectedCity={currentCity} cityData={portData} />
             </div>
-            <div className="h-1/2 bg-white shadow-sm rounded-sm border border-gray-100 overflow-hidden">
+            <div className="flex-1 bg-white shadow-sm rounded-sm border border-gray-100 overflow-hidden">
               <ContainerChart cityData={portData[currentCityIndex]} />
             </div>
           </div>

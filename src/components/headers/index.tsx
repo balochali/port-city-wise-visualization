@@ -47,12 +47,12 @@ export default function Header() {
               height={300}
               alt="Company Logo"
               priority
-              className="w-28 lg:w-40 2xl:w-48 min-[1920px]:w-64 min-[3840px]:w-80 h-auto object-contain"
+              className="w-56 lg:w-72 2xl:w-80 min-[1920px]:w-[28rem] min-[3840px]:w-[36rem] h-auto object-contain"
             />
           </div>
 
           {/* Bismillah Video */}
-          <div className="flex-1 flex justify-center -mt-4 lg:-mt-6 2xl:-mt-8">
+          <div className="flex-1 flex justify-center -mt-2 lg:-mt-4 2xl:-mt-6">
             <video
               src="/bismillah.mp4"
               autoPlay
