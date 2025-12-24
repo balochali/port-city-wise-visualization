@@ -89,7 +89,7 @@ export default function ContainerChart({ cityData }: ChartProps) {
             <YAxis
               axisLine={false}
               tickLine={false}
-              tick={{ fontSize: 14, fill: "#6b7280" }}
+              tick={{ fontSize: 19, fill: "#6b7280" }}
             />
             <Tooltip
               cursor={{ fill: "transparent" }}
@@ -122,7 +122,7 @@ export default function ContainerChart({ cityData }: ChartProps) {
                 position="top"
                 offset={10}
                 style={{
-                  fontSize: "16px",
+                  fontSize: "19px",
                   fontWeight: "bold",
                   fill: "#374151",
                 }}
