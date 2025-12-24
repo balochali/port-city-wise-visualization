@@ -246,7 +246,7 @@ export default function MapClient({
       </MapContainer>
 
       {/* Legend - Bottom Left */}
-      <div className="absolute bottom-3 lg:bottom-4 2xl:bottom-3 left-3 lg:left-4 2xl:left-3 bg-white/95 backdrop-blur-sm rounded-lg shadow-lg p-2 lg:p-2.5 2xl:p-2 border border-gray-200 z-[1000]">
+      <div className="hidden absolute bottom-3 lg:bottom-4 2xl:bottom-3 left-3 lg:left-4 2xl:left-3 bg-white/95 backdrop-blur-sm rounded-lg shadow-lg p-2 lg:p-2.5 2xl:p-2 border border-gray-200 z-[1000]">
         <h4 className="text-[10px] lg:text-xs 2xl:text-[10px] font-semibold text-gray-800 mb-1.5 lg:mb-2 2xl:mb-1.5">
           Port Cities
         </h4>
@@ -267,7 +267,7 @@ export default function MapClient({
       </div>
 
       {/* Active Port Info - Top Right */}
-      <div className="absolute top-2 lg:top-3 2xl:top-2 right-2 lg:right-3 2xl:right-2 bg-white/95 backdrop-blur-sm rounded-lg shadow-lg p-2 lg:p-2.5 2xl:p-2 border border-gray-200 min-w-[140px] lg:min-w-[150px] 2xl:min-w-[130px] max-w-[160px] lg:max-w-[170px] 2xl:max-w-[150px] z-[1000] border-l-3 border-l-red-600">
+      <div className="hidden absolute top-2 lg:top-3 2xl:top-2 right-2 lg:right-3 2xl:right-2 bg-white/95 backdrop-blur-sm rounded-lg shadow-lg p-2 lg:p-2.5 2xl:p-2 border border-gray-200 min-w-[140px] lg:min-w-[150px] 2xl:min-w-[130px] max-w-[160px] lg:max-w-[170px] 2xl:max-w-[150px] z-[1000] border-l-3 border-l-red-600">
         <div className="flex items-center justify-between mb-1 lg:mb-1.5 2xl:mb-1">
           <div className="flex items-center gap-1 lg:gap-1.5 2xl:gap-1">
             <div className="w-1 h-1 lg:w-1.5 lg:h-1.5 2xl:w-1 2xl:h-1 rounded-full bg-green-500 animate-pulse"></div>
