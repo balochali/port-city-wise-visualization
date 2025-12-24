@@ -312,7 +312,7 @@ export default function Tables({
               <table className="w-full">
                 <thead>
                   <tr className="bg-gray-100 border-b border-gray-200">
-                    <th className="px-2 lg:px-3 py-2 lg:py-2.5 text-left text-[10px] lg:text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    <th className="px-2 lg:px-3 py-2 lg:py-2.5 text-left text-sm lg:text-base font-semibold text-gray-600 uppercase tracking-wider">
                       Agent
                     </th>
                     {columns.map((col) => {
@@ -324,7 +324,7 @@ export default function Tables({
                       return (
                         <th
                           key={col.key}
-                          className={`px-1.5 lg:px-2 py-2 lg:py-2.5 text-center text-[10px] lg:text-xs font-semibold uppercase tracking-wide transition-colors ${
+                          className={`px-1.5 lg:px-2 py-2 lg:py-2.5 text-center text-sm lg:text-base font-semibold uppercase tracking-wide transition-colors ${
                             isOverLimit ? "animate-flicker" : "text-gray-600"
                           }`}
                         >
@@ -332,7 +332,7 @@ export default function Tables({
                         </th>
                       );
                     })}
-                    <th className="px-2 lg:px-3 py-2 lg:py-2.5 text-center text-[10px] lg:text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    <th className="px-2 lg:px-3 py-2 lg:py-2.5 text-center text-sm lg:text-base font-semibold text-gray-600 uppercase tracking-wider">
                       Total
                     </th>
                   </tr>
@@ -346,13 +346,13 @@ export default function Tables({
                       transition={{ delay: i * 0.1 }}
                       className="hover:bg-red-50 transition-colors"
                     >
-                      <td className="px-2 lg:px-3 py-2 lg:py-2.5 font-medium text-gray-800 text-xs lg:text-sm">
+                      <td className="px-2 lg:px-3 py-2 lg:py-2.5 font-medium text-gray-800 text-base lg:text-lg">
                         {row.agent}
                       </td>
                       {columns.map((col) => (
                         <td
                           key={col.key}
-                          className="px-1.5 lg:px-2 py-2 lg:py-2.5 text-center text-xs lg:text-sm text-gray-600"
+                          className="px-1.5 lg:px-2 py-2 lg:py-2.5 text-center text-base lg:text-lg text-gray-600"
                         >
                           {row[col.key] === 0 ? (
                             <span className="text-gray-300">0</span>
@@ -361,7 +361,7 @@ export default function Tables({
                           )}
                         </td>
                       ))}
-                      <td className="px-2 lg:px-3 py-2 lg:py-2.5 text-center font-bold text-xs lg:text-sm text-red-600 bg-red-50">
+                      <td className="px-2 lg:px-3 py-2 lg:py-2.5 text-center font-bold text-base lg:text-lg text-red-600 bg-red-50">
                         {row.total}
                       </td>
                     </motion.tr>
@@ -369,7 +369,7 @@ export default function Tables({
                 </tbody>
                 <tfoot>
                   <tr className="bg-red-50 border-t border-red-100">
-                    <td className="px-2 lg:px-3 py-2 lg:py-2.5 font-bold text-gray-800 text-xs lg:text-sm">
+                    <td className="px-2 lg:px-3 py-2 lg:py-2.5 font-bold text-gray-800 text-base lg:text-lg">
                       City Total
                     </td>
                     {columns.map((col) => {
@@ -381,7 +381,7 @@ export default function Tables({
                       return (
                         <td
                           key={col.key}
-                          className={`px-1.5 lg:px-2 py-2 lg:py-2.5 text-center font-bold text-xs lg:text-sm transition-colors ${
+                          className={`px-1.5 lg:px-2 py-2 lg:py-2.5 text-center font-bold text-base lg:text-lg transition-colors ${
                             isOverLimit ? "animate-flicker" : "text-gray-700"
                           }`}
                         >
@@ -389,7 +389,7 @@ export default function Tables({
                         </td>
                       );
                     })}
-                    <td className="px-2 lg:px-3 py-2 lg:py-2.5 text-center font-bold text-sm lg:text-base xl:text-lg text-red-700 bg-red-100">
+                    <td className="px-2 lg:px-3 py-2 lg:py-2.5 text-center font-bold text-lg lg:text-xl xl:text-2xl text-red-700 bg-red-100">
                       {currentCity.agents.reduce((sum, a) => sum + a.total, 0)}
                     </td>
                   </tr>

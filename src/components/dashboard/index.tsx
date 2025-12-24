@@ -100,7 +100,7 @@ export default function Dashboard() {
         </div>
 
         <div className="flex gap-2 lg:gap-3 xl:gap-4 flex-1 min-h-0">
-          <div className="flex-1 min-w-[500px] max-w-[65%]">
+          <div className="flex-1 min-w-[500px] max-w-[75%]">
             <Tables
               cityData={portData}
               currentIndex={currentCityIndex}
@@ -109,7 +109,7 @@ export default function Dashboard() {
             />
           </div>
 
-          <div className="flex-1 min-w-[300px] max-w-[40%] flex flex-col gap-2 lg:gap-3">
+          <div className="flex-1 min-w-[300px] max-w-[25%] flex flex-col gap-2 lg:gap-3">
             <div className="flex-[4] bg-white shadow-sm rounded-sm border border-gray-100 overflow-hidden">
               <MapWrapper selectedCity={currentCity} cityData={portData} />
             </div>
