@@ -110,10 +110,10 @@ export default function Dashboard() {
           </div>
 
           <div className="flex-1 min-w-[300px] max-w-[40%] flex flex-col gap-2 lg:gap-3">
-            <div className="flex-1 bg-white shadow-sm rounded-sm border border-gray-100 overflow-hidden">
+            <div className="flex-[3] bg-white shadow-sm rounded-sm border border-gray-100 overflow-hidden">
               <MapWrapper selectedCity={currentCity} cityData={portData} />
             </div>
-            <div className="flex-1 bg-white shadow-sm rounded-sm border border-gray-100 overflow-hidden">
+            <div className="flex-[7] bg-white shadow-sm rounded-sm border border-gray-100 overflow-hidden">
               <ContainerChart cityData={portData[currentCityIndex]} />
             </div>
           </div>

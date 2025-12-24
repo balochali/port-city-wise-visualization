@@ -52,7 +52,7 @@ export default function ContainerChart({ cityData }: ChartProps) {
     <div
       className={`${lexend.className} w-full h-full flex flex-col p-3 lg:p-4`}
     >
-      <h3 className="text-sm lg:text-base font-semibold text-gray-800 mb-3 flex items-center gap-2">
+      <h3 className="text-base lg:text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
         <span
           className={`w-2 h-2 rounded-full ${
             isAnyOverLimit ? "animate-flicker" : "bg-red-600"
@@ -81,7 +81,7 @@ export default function ContainerChart({ cityData }: ChartProps) {
               dataKey="name"
               axisLine={false}
               tickLine={false}
-              tick={{ fontSize: 12, fill: "#6b7280" }}
+              tick={{ fontSize: 14, fill: "#6b7280" }}
               interval={0}
               angle={-45}
               textAnchor="end"
@@ -89,7 +89,7 @@ export default function ContainerChart({ cityData }: ChartProps) {
             <YAxis
               axisLine={false}
               tickLine={false}
-              tick={{ fontSize: 12, fill: "#6b7280" }}
+              tick={{ fontSize: 14, fill: "#6b7280" }}
             />
             <Tooltip
               cursor={{ fill: "transparent" }}
@@ -97,7 +97,7 @@ export default function ContainerChart({ cityData }: ChartProps) {
                 borderRadius: "8px",
                 border: "none",
                 boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
-                fontSize: "12px",
+                fontSize: "14px",
               }}
             />
             <Bar dataKey="value" radius={[4, 4, 0, 0]}>
@@ -122,7 +122,7 @@ export default function ContainerChart({ cityData }: ChartProps) {
                 position="top"
                 offset={10}
                 style={{
-                  fontSize: "12px",
+                  fontSize: "16px",
                   fontWeight: "bold",
                   fill: "#374151",
                 }}
